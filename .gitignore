@@ -1,0 +1,14 @@
+# pixi environments
+.pixi/*
+!.pixi/config.toml
+
+# Build artifacts
+dataset/
+lib/
+ros2_ws/
+
+# Lock file
+pixi.lock
+
+# Viewer config (auto-generated)
+imgui.ini

@@ -1,0 +1,68 @@
+[workspace]
+name = "humble"
+description = "Development environment for RoboStack ROS packages"
+channels = ["https://prefix.dev/conda-forge"]
+platforms = ["linux-64"]
+
+# This will automatically activate the ros workspace on activation
+[target.unix.activation]
+# For activation scripts, we use bash for Unix-like systems
+scripts = ["install/setup.bash"]
+
+# To build you can use - `pixi run -e <ros distro> build <Any other temporary args>`
+[feature.build.target.unix.tasks]
+build = "colcon build --symlink-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DPython_FIND_VIRTUALENV=ONLY -DPython3_FIND_VIRTUALENV=ONLY"
+
+# Dependencies used by all environments
+[dependencies]
+python = "*"
+# Build tools
+compilers = "*"
+cmake = "*"
+pkg-config = "*"
+make = "*"
+ninja = "*"
+# ROS specific tools
+rosdep = "*"
+colcon-common-extensions = "*"
+gdown = "*"
+
+[target.linux.dependencies]
+libgl-devel = "*"
+
+# Define all the different ROS environments
+# Each environment corresponds to a different ROS distribution
+# and can be activated using the `pixi run/shell -e <environment>` command.
+[environments]
+default = { features = ["humble", "build"] }
+
+### ROS Humble ####
+[feature.humble]
+channels = ["https://prefix.dev/robostack-humble"]
+
+[feature.humble.dependencies]
+ros-humble-desktop = "*"
+ros-humble-image-publisher = "*"
+
+# System Dependencies for Stella VSLAM & Viewers
+glm = "*"
+glfw = "*"
+libpng = "*"
+libjpeg-turbo = "*"
+eigen = "*"
+g2o = "*"
+boost-cpp = "*"
+glew = "*"
+protobuf = "*"
+libopencv = "*"
+glog = "*"
+gflags = "*"
+yaml-cpp = "*"
+sqlite = "*"
+openssl = "*"
+
+# Build Tools
+compilers = "*"
+cmake = "*"
+make = "*"
+pkg-config = "*"
