@@ -2,6 +2,8 @@
 
 **Stella VSLAM** is a modern Visual SLAM (Simultaneous Localization and Mapping) system that supports monocular, stereo, and RGB-D cameras. This repository provides a complete setup for building and running Stella VSLAM with **ROS 2 Humble** using **Pixi** for dependency management, eliminating the need for manual dependency installation.
 
+![Stella-VSLAM-ROS2](additional-readme/image-stella-vslam.png)
+
 ### ✨ Features
 - 🎯 **Modern SLAM**: Based on ORB-SLAM with improvements and active maintenance
 - 🤖 **ROS 2 Integration**: Full ROS 2 Humble support with topic-based communication

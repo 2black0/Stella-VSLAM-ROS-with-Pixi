@@ -58,4 +58,5 @@ cd "$BUILD_DIR"
     -c "$LIB_DIR/stella_vslam/example/aist/equirectangular.yaml" \
     --map-db-out map.msg \
     --frame-skip 2 \
+    --viewer pangolin_viewer \
     --no-sleep
