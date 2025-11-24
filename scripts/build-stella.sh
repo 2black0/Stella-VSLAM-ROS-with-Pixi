@@ -66,7 +66,7 @@ cmake \
     -DIridescence_LIBRARY=$CONDA_PREFIX/lib/libiridescence.so \
     -Dgl_imgui_LIBRARY=$CONDA_PREFIX/lib/libgl_imgui.so \
     ..
-make -j$(($(nproc) / 2))
+make -j$(nproc)
 make install
 
 # --- PangolinViewer ---
@@ -122,7 +122,7 @@ cmake \
     -DBUILD_PANGOLIN_ZSTD=OFF \
     -DBUILD_PYPANGOLIN_MODULE=OFF \
     ..
-make -j$(($(nproc) / 2))
+make -j$(nproc)
 make install
 
 # --- SocketViewer ---
