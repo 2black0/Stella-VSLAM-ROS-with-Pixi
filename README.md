@@ -29,6 +29,14 @@
 pixi install
 ```
 
+then activate the Pixi shell:
+
+```bash
+pixi shell
+```
+
+or run with `pixi run <command>`.
+
 ### 2️⃣ Build Stella VSLAM & ROS 2 Wrapper
 
 ```bash
@@ -38,13 +46,13 @@ pixi run bash scripts/build-stella.sh
 ### 3️⃣ Download Example Dataset
 
 ```bash
-bash scripts/download-stella-example.sh
+pixi run bash scripts/download-stella-example.sh
 ```
 
 ### 4️⃣ Verify Build
 
 ```bash
-bash scripts/check-stella-ros.sh
+pixi run bash scripts/check-stella-ros.sh
 ```
 
 ---
