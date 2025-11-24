@@ -55,6 +55,9 @@ cmake \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
     -DCMAKE_PREFIX_PATH=$CONDA_PREFIX \
+    -DIridescence_INCLUDE_DIRS=$CONDA_PREFIX/include/iridescence \
+    -DIridescence_LIBRARY=$CONDA_PREFIX/lib/libiridescence.so \
+    -Dgl_imgui_LIBRARY=$CONDA_PREFIX/lib/libgl_imgui.so \
     ..
 make -j$(($(nproc) / 2))
 make install
@@ -165,6 +168,22 @@ fi
 # Patch FBoW to fix class-memaccess warning
 echo "🔧 Patching FBoW/src/fbow.cpp..."
 sed -i 's/memset(&_params,0,sizeof(_params));/_params = {};/g' stella_vslam/3rd/FBoW/src/fbow.cpp
+
+# Build & install FBoW as shared lib so it lives in the Pixi env
+echo "📦 Build FBoW (shared)"
+cd stella_vslam/3rd/FBoW
+mkdir -p build && cd build
+cmake \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
+    -DCMAKE_PREFIX_PATH=$CONDA_PREFIX \
+    -DBUILD_SHARED_LIBS=ON \
+    ..
+make -j$(nproc)
+make install
+
+# Back to stella_vslam core build
+cd "$LIB_DIR"
 
 # Install dependencies via rosdep (skipping what we installed via pixi if possible, but safe to run)
 # rosdep install -y -i --from-paths . # Pixi handles most, but this might catch extras. 
