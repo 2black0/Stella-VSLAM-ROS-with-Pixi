@@ -298,17 +298,17 @@ echo "------------------------------------------"
 if [ ! -d "$ROS2_WS/src" ]; then mkdir -p "$ROS2_WS/src"; fi
 cd "$ROS2_WS/src"
 
-if [ ! -d "stella_vslam_ros" ]; then
-    git clone --recursive -b "$STELLA_VSLAM_ROS_BRANCH" "$STELLA_VSLAM_ROS_REPO"
-    # Patch CMakeLists.txt to force suppress warnings
+if [ ! -d "stella_vslam_ros" ] || [ ! -f "stella_vslam_ros/CMakeLists.txt" ]; then
+    echo "ℹ️  stella_vslam_ros tidak ditemukan atau tidak valid. Meng-clone ulang..."
+    rm -rf stella_vslam_ros  # hapus jika ada tapi rusak/kosong
+    git clone --recursive -b "$STELLA_VSLAM_ROS_BRANCH" "$STELLA_VSLAM_ROS_REPO" stella_vslam_ros
     echo "🔧 Patching stella_vslam_ros/CMakeLists.txt..."
     sed -i '1s/^/add_compile_options(-Wno-array-bounds -Wno-stringop-overflow)\n/' stella_vslam_ros/CMakeLists.txt
 else
-    echo "ℹ️  Repo stella_vslam_ros sudah ada."
-    # Ensure patch is applied even if repo exists
+    echo "ℹ️  stella_vslam_ros sudah ada dan valid."
     if ! grep -q "add_compile_options(-Wno-array-bounds" stella_vslam_ros/CMakeLists.txt; then
-         echo "🔧 Patching stella_vslam_ros/CMakeLists.txt..."
-         sed -i '1s/^/add_compile_options(-Wno-array-bounds -Wno-stringop-overflow)\n/' stella_vslam_ros/CMakeLists.txt
+        echo "🔧 Patching stella_vslam_ros/CMakeLists.txt..."
+        sed -i '1s/^/add_compile_options(-Wno-array-bounds -Wno-stringop-overflow)\n/' stella_vslam_ros/CMakeLists.txt
     fi
 fi
 
