@@ -96,6 +96,47 @@ This script automatically:
 - Clones & builds `stella_vslam_examples`
 - Runs `run_video_slam` with Pangolin Viewer
 
+### 🧩 ROS 2 Composable (Intra-Process, Zero-Copy Friendly)
+Semua node dalam satu process untuk menghindari serialisasi DDS (lebih cepat untuk video besar).
+
+1) Terminal 1: jalankan container komponen dengan intra-process
+```bash
+pixi shell
+source ros2_ws/install/setup.bash
+ros2 run rclcpp_components component_container_mt \
+  --ros-args -r __node:=slam_container -p use_intra_process_comms:=true
+```
+
+2) Terminal 2: load publisher video (sesuaikan path video jika perlu)
+```bash
+pixi shell
+source ros2_ws/install/setup.bash
+ros2 component load /slam_container stella_vslam_ros stella_vslam_ros::VideoPublisher \
+  --node-name video_pub \
+  --param video_path:=/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/dataset/aist_living_lab_1/video.mp4 \
+  --param topic:=camera/image_raw \
+  --param frame_id:=camera \
+  --param fps:=0.0 \
+  --param loop:=true
+```
+
+3) Terminal 3: load SLAM dengan Pangolin
+```bash
+pixi shell
+source ros2_ws/install/setup.bash
+ros2 component load /slam_container stella_vslam_ros stella_vslam_ros::System \
+  --node-name run_slam \
+  --param vocab_file_path:=/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/dataset/orb_vocab.fbow \
+  --param setting_file_path:=/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/lib/stella_vslam/example/aist/equirectangular.yaml \
+  --param map_db_path_out:=/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/map.msg \
+  --param viewer:=pangolin_viewer \
+  --param publish_tf:=false \
+  --param encoding:=bgr8 \
+  --param qos_reliability:=reliable
+```
+
+Pangolin akan muncul; pipeline ini menggunakan intra-process communications untuk menghindari copy/serialisasi antar proses.
+
 ---
 
 ## ⚙️ Command-Line Arguments
