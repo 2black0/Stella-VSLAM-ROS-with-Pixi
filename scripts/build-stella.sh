@@ -9,6 +9,9 @@ PROJECT_ROOT="$SCRIPT_DIR/.."
 # Folder build terpusat
 LIB_DIR="$PROJECT_ROOT/lib"
 ROS2_WS="$PROJECT_ROOT/ros2_ws"
+# Repo fork untuk stella_vslam_ros (override via env jika perlu)
+STELLA_VSLAM_ROS_REPO="${STELLA_VSLAM_ROS_REPO:-https://github.com/2black0/stella_vslam_ros.git}"
+STELLA_VSLAM_ROS_BRANCH="${STELLA_VSLAM_ROS_BRANCH:-ros2}"
 
 echo "=========================================="
 echo "   SETUP & BUILD STELLA VSLAM (ROS 2)"
@@ -55,6 +58,10 @@ cmake \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
     -DCMAKE_PREFIX_PATH=$CONDA_PREFIX \
+    -DCMAKE_SYSTEM_PREFIX_PATH=$CONDA_PREFIX \
+    -DCMAKE_IGNORE_PREFIX_PATH=/usr/local \
+    -DCMAKE_SKIP_BUILD_RPATH=TRUE \
+    -DCMAKE_SKIP_INSTALL_RPATH=TRUE \
     -DIridescence_INCLUDE_DIRS=$CONDA_PREFIX/include/iridescence \
     -DIridescence_LIBRARY=$CONDA_PREFIX/lib/libiridescence.so \
     -Dgl_imgui_LIBRARY=$CONDA_PREFIX/lib/libgl_imgui.so \
@@ -86,6 +93,10 @@ cmake \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
     -DCMAKE_PREFIX_PATH=$CONDA_PREFIX \
+    -DCMAKE_SYSTEM_PREFIX_PATH=$CONDA_PREFIX \
+    -DCMAKE_IGNORE_PREFIX_PATH=/usr/local \
+    -DCMAKE_SKIP_BUILD_RPATH=TRUE \
+    -DCMAKE_SKIP_INSTALL_RPATH=TRUE \
     -DCMAKE_CXX_FLAGS="-Wno-stringop-truncation -Wno-deprecated-copy -Wno-parentheses -Wno-unused-parameter -Wno-maybe-uninitialized" \
     -DBUILD_EXAMPLES=OFF \
     -DBUILD_PANGOLIN_DEPTHSENSE=OFF \
@@ -142,6 +153,10 @@ cmake \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
     -DCMAKE_PREFIX_PATH=$CONDA_PREFIX \
+    -DCMAKE_SYSTEM_PREFIX_PATH=$CONDA_PREFIX \
+    -DCMAKE_IGNORE_PREFIX_PATH=/usr/local \
+    -DCMAKE_SKIP_BUILD_RPATH=TRUE \
+    -DCMAKE_SKIP_INSTALL_RPATH=TRUE \
     -DCMAKE_CXX_FLAGS="-Wno-stringop-truncation -Wno-deprecated-copy" \
     -DBUILD_UNIT_TESTS=OFF \
     ..
@@ -177,6 +192,7 @@ cmake \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
     -DCMAKE_PREFIX_PATH=$CONDA_PREFIX \
+    -DCMAKE_POLICY_DEFAULT_CMP0074=NEW \
     -DBUILD_SHARED_LIBS=ON \
     ..
 make -j$(nproc)
@@ -197,6 +213,7 @@ cmake \
     -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
     -DCMAKE_PREFIX_PATH=$CONDA_PREFIX \
     -DCMAKE_CXX_FLAGS="-Wno-class-memaccess -Wno-unused-variable -Wno-unused-parameter -Wno-maybe-uninitialized" \
+    -DCMAKE_POLICY_DEFAULT_CMP0074=NEW \
     -DUSE_PANGOLIN_VIEWER=ON \
     -DUSE_IRIDESCENCE_VIEWER=ON \
     -DUSE_SOCKET_PUBLISHER=ON \
@@ -223,6 +240,11 @@ cmake \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
     -DCMAKE_PREFIX_PATH=$CONDA_PREFIX \
+    -DCMAKE_SYSTEM_PREFIX_PATH=$CONDA_PREFIX \
+    -DCMAKE_IGNORE_PREFIX_PATH=/usr/local \
+    -DIridescence_INCLUDE_DIRS=$CONDA_PREFIX/include/iridescence \
+    -DIridescence_LIBRARY=$CONDA_PREFIX/lib/libiridescence.so \
+    -Dgl_imgui_LIBRARY=$CONDA_PREFIX/lib/libgl_imgui.so \
     ..
 make -j$(nproc)
 make install
@@ -277,7 +299,7 @@ if [ ! -d "$ROS2_WS/src" ]; then mkdir -p "$ROS2_WS/src"; fi
 cd "$ROS2_WS/src"
 
 if [ ! -d "stella_vslam_ros" ]; then
-    git clone --recursive -b ros2 --depth 1 https://github.com/stella-cv/stella_vslam_ros.git
+    git clone --recursive -b "$STELLA_VSLAM_ROS_BRANCH" "$STELLA_VSLAM_ROS_REPO"
     # Patch CMakeLists.txt to force suppress warnings
     echo "🔧 Patching stella_vslam_ros/CMakeLists.txt..."
     sed -i '1s/^/add_compile_options(-Wno-array-bounds -Wno-stringop-overflow)\n/' stella_vslam_ros/CMakeLists.txt
