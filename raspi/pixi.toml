@@ -1,0 +1,36 @@
+[workspace]
+name = "stella-vslam-rpi"
+description = "Stella VSLAM environment for Raspberry Pi 5 (No ROS)"
+channels = ["https://prefix.dev/conda-forge"]
+platforms = ["linux-aarch64", "linux-64"]
+
+[target.unix.activation]
+scripts = []
+
+[dependencies]
+python = "*"
+compilers = "*"
+cmake = "*"
+pkg-config = "*"
+make = "*"
+ninja = "*"
+gdown = "*"
+
+# System Dependencies for Stella VSLAM
+glm = "*"
+glfw = "*"
+libpng = "*"
+libjpeg-turbo = "*"
+eigen = "*"
+g2o = "*"
+boost-cpp = "*"
+glew = "*"
+protobuf = "*"
+libopencv = "*"
+glog = "*"
+gflags = "*"
+yaml-cpp = "*"
+sqlite = "*"
+openssl = "*"
+
+# Build Tools

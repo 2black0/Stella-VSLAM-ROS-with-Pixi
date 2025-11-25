@@ -15,3 +15,5 @@ pixi.lock
 
 # Viewer config (auto-generated)
 imgui.ini
+
+.DS_Store

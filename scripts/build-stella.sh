@@ -166,7 +166,7 @@ cmake \
     -DCMAKE_CXX_FLAGS="-Wno-stringop-truncation -Wno-deprecated-copy" \
     -DBUILD_UNIT_TESTS=OFF \
     ..
-make -j4
+make -j$(nproc)
 make install
 
 # NOTE: Skipping protobuf 3.6.1 build as we use system/pixi protobuf to avoid conflicts.
