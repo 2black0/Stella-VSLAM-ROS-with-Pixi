@@ -118,7 +118,7 @@ Run SLAM with **AirSim simulator** as camera input source:
 pixi shell
 ./bin/run_camera_airsim_slam \
     -v dataset/orb_vocab.fbow \
-    -c config/airsim_camera.yaml \
+    -c config/airsim-1280x720.yaml \
     --viewer pangolin_viewer \
     --airsim-host 127.0.0.1 \
     --airsim-port 41451
