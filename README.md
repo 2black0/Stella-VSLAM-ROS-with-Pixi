@@ -104,6 +104,36 @@ This script automatically:
 - Clones & builds `stella_vslam_examples`
 - Runs `run_video_slam` with Pangolin Viewer
 
+### 🚁 AirSim Example (Real-time with Simulator)
+
+Run SLAM with **AirSim simulator** as camera input source:
+
+#### Prerequisites:
+1. **AirSim simulator running** (Unreal Engine or Unity)
+2. **ORB vocabulary**: `dataset/orb_vocab.fbow`
+3. **Camera config**: Create appropriate YAML config for your AirSim camera
+
+#### Run:
+```bash
+pixi shell
+./bin/run_camera_airsim_slam \
+    -v dataset/orb_vocab.fbow \
+    -c config/airsim_camera.yaml \
+    --viewer pangolin_viewer \
+    --airsim-host 127.0.0.1 \
+    --airsim-port 41451
+```
+
+#### AirSim-specific Arguments:
+```
+--airsim-host arg (=127.0.0.1)    AirSim server IP address
+--airsim-port arg (=41451)         AirSim RPC port
+--vehicle arg (=)                  Vehicle name (empty for default)
+--camera arg (=0)                  Camera name/ID
+```
+
+**Note:** The executable is available at `bin/run_camera_airsim_slam` or `lib/stella_vslam_examples/build/run_camera_airsim_slam`
+
 ### 🧩 ROS 2 Composable (Intra-Process, Zero-Copy Friendly)
 All nodes run in a single process to avoid DDS serialization (faster for large videos).
 
@@ -191,17 +221,25 @@ ROS 2 Parameters:
 
 ```
 stella-vslam-ros/
+├── bin/                        # Quick access executables
+│   ├── run_camera_airsim_slam
+│   └── run_camera_airsim_log_slam
 ├── dataset/                    # Example datasets
 │   ├── orb_vocab.fbow
 │   └── aist_living_lab_1/
 ├── lib/                        # Built libraries
 │   ├── stella_vslam/
 │   ├── pangolin_viewer/
+│   ├── AirSim/                 # AirSim headers & libraries
 │   └── stella_vslam_examples/
+│       └── build/
+│           ├── run_camera_airsim_slam
+│           ├── run_camera_slam
+│           └── ... (other examples)
 ├── ros2_ws/                    # ROS 2 workspace
 │   └── src/stella_vslam_ros/
 ├── scripts/
-│   ├── build-stella.sh         # Build script
+│   ├── build-stella.sh         # Build script (includes AirSim examples)
 │   ├── download-stella-example.sh
 │   ├── check-stella-ros.sh
 │   └── run-stella-simple.sh

@@ -13,12 +13,18 @@ ROS2_WS="$PROJECT_ROOT/ros2_ws"
 STELLA_VSLAM_ROS_REPO="${STELLA_VSLAM_ROS_REPO:-https://github.com/2black0/stella_vslam_ros.git}"
 STELLA_VSLAM_ROS_BRANCH="${STELLA_VSLAM_ROS_BRANCH:-ros2}"
 
+# Build options (set to 1 to enable, 0 to skip)
+# Fokus non-ROS: skip ROS build by default
+BUILD_ROS="${BUILD_ROS:-0}"  # Set to 1 jika butuh ROS wrapper
+
 echo "=========================================="
-echo "   SETUP & BUILD STELLA VSLAM (ROS 2)"
+echo "   SETUP & BUILD STELLA VSLAM"
 echo "=========================================="
 echo "📂 Project Root : $PROJECT_ROOT"
 echo "📂 Lib Dir      : $LIB_DIR"
 echo "📂 ROS2 WS      : $ROS2_WS"
+echo "🎯 Build Mode   : Non-ROS (AirSim examples)"
+echo "📦 ROS wrapper  : $([ "$BUILD_ROS" = "1" ] && echo "Enabled" || echo "Disabled (set BUILD_ROS=1 to enable)")"
 
 # 1. Cek Environment Pixi
 if [ -z "$CONDA_PREFIX" ]; then
@@ -166,6 +172,60 @@ make install
 # NOTE: Skipping protobuf 3.6.1 build as we use system/pixi protobuf to avoid conflicts.
 
 # ==========================================
+# PART 1.5: SETUP AIRSIM (for camera examples)
+# ==========================================
+echo ""
+echo "------------------------------------------"
+echo "📦 Setup AirSim Headers & Libraries"
+echo "------------------------------------------"
+
+cd "$LIB_DIR"
+if [ ! -d "AirSim" ]; then
+    echo "🔽 Cloning AirSim repository..."
+    git clone --depth 1 https://github.com/microsoft/AirSim.git
+fi
+
+cd AirSim
+
+# Download dependencies manually without running setup.sh (to avoid apt-get errors)
+echo "📦 Downloading AirSim dependencies manually..."
+
+# 1. Download Eigen if not present
+if [ ! -d "AirLib/deps/eigen3/Eigen" ]; then
+    echo "  ⬇️  Downloading Eigen..."
+    mkdir -p AirLib/deps
+    if [ ! -f "AirLib/deps/eigen3.zip" ]; then
+        wget -q https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.zip -O AirLib/deps/eigen3.zip
+    fi
+    unzip -q AirLib/deps/eigen3.zip -d AirLib/deps/
+    mv AirLib/deps/eigen-3.3.7 AirLib/deps/eigen3
+    echo "  ✅ Eigen downloaded"
+else
+    echo "  ✅ Eigen already present"
+fi
+
+# 2. Download rpclib if not present
+if [ ! -d "external/rpclib/rpclib-2.3.0" ]; then
+    echo "  ⬇️  Downloading rpclib..."
+    mkdir -p external/rpclib
+    if [ ! -f "external/rpclib/rpclib-2.3.0.zip" ]; then
+        wget -q https://github.com/rpclib/rpclib/archive/v2.3.0.zip -O external/rpclib/rpclib-2.3.0.zip
+    fi
+    unzip -q external/rpclib/rpclib-2.3.0.zip -d external/rpclib/
+    echo "  ✅ rpclib downloaded"
+else
+    echo "  ✅ rpclib already present"
+fi
+
+# 3. Verify AirLib headers exist (should be in git repo)
+if [ ! -d "AirLib/include" ]; then
+    echo "❌ ERROR: AirLib/include not found. This should exist in the cloned repository."
+    exit 1
+fi
+
+echo "✅ AirSim setup complete (without apt-get)"
+
+# ==========================================
 # PART 2: BUILD STELLA_VSLAM (CORE)
 # ==========================================
 echo ""
@@ -288,43 +348,149 @@ make -j$(nproc)
 make install
 
 # ==========================================
-# PART 3: BUILD STELLA_VSLAM_ROS
+# PART 2.5: PREPARE STELLA_VSLAM EXAMPLES
 # ==========================================
 echo ""
 echo "------------------------------------------"
-echo "📦 Build stella_vslam_ros"
+echo "📦 Prepare stella_vslam_examples"
 echo "------------------------------------------"
 
-if [ ! -d "$ROS2_WS/src" ]; then mkdir -p "$ROS2_WS/src"; fi
-cd "$ROS2_WS/src"
-
-if [ ! -d "stella_vslam_ros" ] || [ ! -f "stella_vslam_ros/CMakeLists.txt" ]; then
-    echo "ℹ️  stella_vslam_ros tidak ditemukan atau tidak valid. Meng-clone ulang..."
-    rm -rf stella_vslam_ros  # hapus jika ada tapi rusak/kosong
-    git clone --recursive -b "$STELLA_VSLAM_ROS_BRANCH" "$STELLA_VSLAM_ROS_REPO" stella_vslam_ros
-    echo "🔧 Patching stella_vslam_ros/CMakeLists.txt..."
-    sed -i '1s/^/add_compile_options(-Wno-array-bounds -Wno-stringop-overflow)\n/' stella_vslam_ros/CMakeLists.txt
+cd "$LIB_DIR"
+# Clone original examples if not exists
+if [ ! -d "stella_vslam_examples" ]; then
+    echo "🔽 Cloning stella_vslam_examples..."
+    git clone --recursive --depth 1 https://github.com/stella-cv/stella_vslam_examples.git
 else
-    echo "ℹ️  stella_vslam_ros sudah ada dan valid."
-    if ! grep -q "add_compile_options(-Wno-array-bounds" stella_vslam_ros/CMakeLists.txt; then
-        echo "🔧 Patching stella_vslam_ros/CMakeLists.txt..."
-        sed -i '1s/^/add_compile_options(-Wno-array-bounds -Wno-stringop-overflow)\n/' stella_vslam_ros/CMakeLists.txt
-    fi
+    echo "ℹ️  Folder stella_vslam_examples sudah ada."
 fi
 
-cd "$ROS2_WS"
-# rosdep install -y -i --from-paths src --skip-keys=stella_vslam # Pixi handles deps
+cd stella_vslam_examples
 
-echo "🔨 Building with colcon..."
-colcon build \
-    --symlink-install \
-    --cmake-args \
+# Copy custom AirSim source files from project code
+CUSTOM_EXAMPLES_SRC="$PROJECT_ROOT/code/stella-vslam/examples"
+if [ -d "$CUSTOM_EXAMPLES_SRC/src" ]; then
+    echo "📋 Copying custom AirSim examples..."
+    cp -v "$CUSTOM_EXAMPLES_SRC/src/run_camera_airsim_slam.cc" src/
+    cp -v "$CUSTOM_EXAMPLES_SRC/src/run_camera_airsim_log_slam.cc" src/
+    
+    # Backup original CMakeLists.txt
+    if [ ! -f "CMakeLists.txt.original" ]; then
+        cp CMakeLists.txt CMakeLists.txt.original
+    fi
+    
+    # Copy custom CMakeLists.txt with AirSim support
+    cp -v "$CUSTOM_EXAMPLES_SRC/CMakeLists.txt" .
+    
+    echo "✅ Custom AirSim examples merged"
+else
+    echo "⚠️  Warning: Custom examples not found at $CUSTOM_EXAMPLES_SRC"
+    echo "   Will build original examples only (no AirSim support)"
+fi
+
+# ==========================================
+# PART 2.6: BUILD STELLA_VSLAM EXAMPLES
+# ==========================================
+echo ""
+echo "------------------------------------------"
+echo "📦 Build stella_vslam_examples"
+echo "------------------------------------------"
+
+cd "$LIB_DIR/stella_vslam_examples"
+mkdir -p build && cd build
+
+# Configure with CMake
+cmake \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-    -DCMAKE_PREFIX_PATH=$CONDA_PREFIX
+    -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX \
+    -DCMAKE_PREFIX_PATH=$CONDA_PREFIX \
+    -DCMAKE_CXX_FLAGS="-Wno-class-memaccess -Wno-unused-variable -Wno-unused-parameter -Wno-deprecated-copy -Wno-deprecated-declarations -Wno-stringop-truncation" \
+    -DCMAKE_POLICY_DEFAULT_CMP0074=NEW \
+    -DUSE_STACK_TRACE_LOGGER=OFF \
+    -DAIRSIM_ROOT="$LIB_DIR/AirSim" \
+    ..
+
+
+echo "🔨 Building examples..."
+make -j$(nproc)
+
+# List built executables
+echo ""
+echo "✅ Examples built successfully:"
+ls -lh run_* 2>/dev/null || echo "   (check build directory for executables)"
+
+# Optional: create symlinks in a known location for easy access
+mkdir -p "$PROJECT_ROOT/bin"
+for exe in run_camera_airsim_slam run_camera_airsim_log_slam; do
+    if [ -f "$exe" ]; then
+        ln -sf "$LIB_DIR/stella_vslam_examples/build/$exe" "$PROJECT_ROOT/bin/$exe"
+        echo "   Symlinked: bin/$exe"
+    fi
+done
+
+# ==========================================
+# PART 3: BUILD STELLA_VSLAM_ROS (OPTIONAL)
+# ==========================================
+
+if [ "$BUILD_ROS" = "1" ]; then
+    echo ""
+    echo "------------------------------------------"
+    echo "📦 Build stella_vslam_ros"
+    echo "------------------------------------------"
+
+    if [ ! -d "$ROS2_WS/src" ]; then mkdir -p "$ROS2_WS/src"; fi
+    cd "$ROS2_WS/src"
+
+    if [ ! -d "stella_vslam_ros" ] || [ ! -f "stella_vslam_ros/CMakeLists.txt" ]; then
+        echo "ℹ️  stella_vslam_ros tidak ditemukan atau tidak valid. Meng-clone ulang..."
+        rm -rf stella_vslam_ros  # hapus jika ada tapi rusak/kosong
+        git clone --recursive -b "$STELLA_VSLAM_ROS_BRANCH" "$STELLA_VSLAM_ROS_REPO" stella_vslam_ros
+        echo "🔧 Patching stella_vslam_ros/CMakeLists.txt..."
+        sed -i '1s/^/add_compile_options(-Wno-array-bounds -Wno-stringop-overflow)\n/' stella_vslam_ros/CMakeLists.txt
+    else
+        echo "ℹ️  stella_vslam_ros sudah ada dan valid."
+        if ! grep -q "add_compile_options(-Wno-array-bounds" stella_vslam_ros/CMakeLists.txt; then
+            echo "🔧 Patching stella_vslam_ros/CMakeLists.txt..."
+            sed -i '1s/^/add_compile_options(-Wno-array-bounds -Wno-stringop-overflow)\n/' stella_vslam_ros/CMakeLists.txt
+        fi
+    fi
+
+    cd "$ROS2_WS"
+    # rosdep install -y -i --from-paths src --skip-keys=stella_vslam # Pixi handles deps
+
+    echo "🔨 Building with colcon..."
+    colcon build \
+        --symlink-install \
+        --cmake-args \
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DCMAKE_PREFIX_PATH=$CONDA_PREFIX
+else
+    echo ""
+    echo "------------------------------------------"
+    echo "⏭️  Skipping stella_vslam_ros (BUILD_ROS=0)"
+    echo "   Set BUILD_ROS=1 to enable ROS wrapper build"
+    echo "------------------------------------------"
+fi
 
 echo ""
 echo "=========================================="
 echo "✅ SUKSES! Build stella-vslam Complete."
-echo "   Jangan lupa source workspace Anda:"
-echo "   source $ROS2_WS/install/setup.bash"
+if [ "$BUILD_ROS" = "1" ]; then
+    echo "   Jangan lupa source workspace Anda:"
+    echo "   source $ROS2_WS/install/setup.bash"
+fi
+echo ""
+echo "📦 Built executables:"
+echo "   Examples: $LIB_DIR/stella_vslam_examples/build/"
+echo "     - run_camera_slam, run_video_slam, run_image_slam, etc."
+if [ -f "$LIB_DIR/stella_vslam_examples/build/run_camera_airsim_slam" ]; then
+    echo "     - run_camera_airsim_slam ✅"
+    echo "     - run_camera_airsim_log_slam ✅"
+fi
+echo ""
+echo "   Quick access: $PROJECT_ROOT/bin/"
+if [ "$BUILD_ROS" = "0" ]; then
+    echo ""
+    echo "ℹ️  ROS wrapper was skipped (BUILD_ROS=0)"
+    echo "   To build ROS wrapper: BUILD_ROS=1 ./scripts/build-stella.sh"
+fi
 echo "=========================================="
