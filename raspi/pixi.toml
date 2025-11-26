@@ -1,6 +1,6 @@
 [workspace]
 name = "stella-vslam-rpi"
-description = "Stella VSLAM environment for Raspberry Pi 5 (No ROS)"
+description = "Stella VSLAM environment for Raspberry Pi 5 (Hybrid Build)"
 channels = ["https://prefix.dev/conda-forge"]
 platforms = ["linux-aarch64", "linux-64"]
 
@@ -8,29 +8,37 @@ platforms = ["linux-aarch64", "linux-64"]
 scripts = []
 
 [dependencies]
-python = "*"
-compilers = "*"
-cmake = "*"
-pkg-config = "*"
+# --- Build Tools ---
+python = "3.10.*"
+cmake = ">=3.16"
 make = "*"
 ninja = "*"
-gdown = "*"
+pkg-config = "*"
+c-compiler = "*"    # gcc
+cxx-compiler = "*"  # g++ (Support C++14/17)
+binutils = "*"      # ld, ar, dll
 
-# System Dependencies for Stella VSLAM
-glm = "*"
-glfw = "*"
-libpng = "*"
-libjpeg-turbo = "*"
-eigen = "*"
-g2o = "*"
-boost-cpp = "*"
-glew = "*"
-protobuf = "*"
-libopencv = "*"
+# --- Heavy Libraries (Use Pixi Binary to save time) ---
+# Kita gunakan versi binary untuk ini agar tidak compile berjam-jam
+opencv = ">=4.5"    # Pengganti build OpenCV manual
+eigen = ">=3.3"     # Pengganti build Eigen manual
+protobuf = ">=3.15" # Pengganti build Protobuf manual (libprotobuf & protoc)
+libboost = "*"      # Pengganti build Boost manual
+suitesparse = "*"   # PENTING: Dependency untuk build g2o (CSparse/Cholmod)
+
+# --- Common Dependencies ---
 glog = "*"
 gflags = "*"
 yaml-cpp = "*"
 sqlite = "*"
 openssl = "*"
+glm = "*"
+glew = "*"          # Dibutuhkan meski headless untuk linking
+libpng = "*"
+libjpeg-turbo = "*"
 
-# Build Tools
+# Opsional: Tools dev
+gdb = "*"
+
+# Download dataset
+gdown = "*"
