@@ -104,6 +104,21 @@ This script automatically:
 - Clones & builds `stella_vslam_examples`
 - Runs `run_video_slam` with Pangolin Viewer
 
+### 🏂 UZH-FPV Monocular (Image Sequence)
+
+Dataset: UZH-FPV FPV/VIO dataset — download sequences from https://fpv.ifi.uzh.ch/datasets/
+
+Run monocular image-sequence SLAM:
+```bash
+pixi run bash scripts/run-stella-uzh-fpv.sh --dataset /path/to/uzh-fpv/indoor_forward_7_snapdragon_with_gt
+# or if you point directly to the img folder:
+# pixi run bash scripts/run-stella-uzh-fpv.sh --dataset /path/to/uzh-fpv/indoor_forward_7_snapdragon_with_gt/img
+```
+What the script does:
+- Prepares ordered symlinks of left images under `dataset/uzh_fpv_<sequence>_mono/img`
+- Uses config `lib/stella_vslam/example/uzh_fpv/UZH_FPV_mono.yaml` and vocab `dataset/orb_vocab.fbow`
+- Runs `run_image_slam` (Pangolin viewer, frame-skip 1)
+
 ### 🚁 AirSim Example (Real-time with Simulator)
 
 Run SLAM with **AirSim simulator** as camera input source:
