@@ -17,3 +17,4 @@ pixi.lock
 imgui.ini
 
 .DS_Store
+socket_viewer/node_modules
