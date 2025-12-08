@@ -14,8 +14,8 @@ BUILD_DIR="$EXAMPLES_DIR/build"
 VOCAB="$DATASET_DIR/orb_vocab.fbow"
 CONFIG="$LIB_DIR/stella_vslam/example/uzh_fpv/UZH_FPV_mono.yaml"
 
-# Lokasi asli dataset (bisa diubah lewat env SRC_DATASET)
-SRC_DATASET="${SRC_DATASET:-/home/ardyseto/Downloads/py-vslam/datasets/uzh-fpv}"
+# Default dataset location (override via SRC_DATASET)
+SRC_DATASET="${SRC_DATASET:-$HOME/Downloads/py-vslam/datasets/uzh-fpv}"
 
 # Argumen opsional: --dataset /path/to/uzh-fpv atau /path/to/uzh-fpv/img
 if [ $# -ge 2 ] && [ "$1" = "--dataset" ]; then
