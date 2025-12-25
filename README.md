@@ -157,36 +157,21 @@ All nodes run in a single process to avoid DDS serialization (faster for large v
 ```bash
 pixi shell
 source ros2_ws/install/setup.bash
-ros2 run rclcpp_components component_container_mt \
-  --ros-args -r __node:=slam_container -p use_intra_process_comms:=true
+ros2 run rclcpp_components component_container_mt --ros-args -r __node:=slam_container -p use_intra_process_comms:=true
 ```
 
 2) Terminal 2: Load video publisher (adjust video path if needed)
 ```bash
 pixi shell
 source ros2_ws/install/setup.bash
-ros2 component load /slam_container stella_vslam_ros stella_vslam_ros::VideoPublisher \
-  --node-name video_pub \
-  --param video_path:=dataset/aist_living_lab_1/video.mp4 \
-  --param topic:=camera/image_raw \
-  --param frame_id:=camera \
-  --param fps:=0.0 \
-  --param loop:=true
+ros2 component load /slam_container stella_vslam_ros stella_vslam_ros::VideoPublisher --node-name video_pub --param video_path:=dataset/aist_living_lab_1/video.mp4 --param topic:=camera/image_raw --param frame_id:=camera --param fps:=0.0 --param loop:=true
 ```
 
 3) Terminal 3: Load SLAM with Pangolin
 ```bash
 pixi shell
 source ros2_ws/install/setup.bash
-ros2 component load /slam_container stella_vslam_ros stella_vslam_ros::System \
-  --node-name run_slam \
-  --param vocab_file_path:=dataset/orb_vocab.fbow \
-  --param setting_file_path:=lib/stella_vslam/example/aist/equirectangular.yaml \
-  --param map_db_path_out:=map.msg \
-  --param viewer:=pangolin_viewer \
-  --param publish_tf:=false \
-  --param encoding:=bgr8 \
-  --param qos_reliability:=reliable
+ros2 component load /slam_container stella_vslam_ros stella_vslam_ros::System --node-name run_slam --param vocab_file_path:=dataset/orb_vocab.fbow --param setting_file_path:=lib/stella_vslam/example/aist/equirectangular.yaml --param map_db_path_out:=map.msg --param viewer:=pangolin_viewer --param publish_tf:=false --param encoding:=bgr8 --param qos_reliability:=reliable
 ```
 
 Pangolin will appear; this pipeline uses intra-process communications to avoid copy/serialization between processes.
