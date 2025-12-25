@@ -111,12 +111,12 @@ Dataset: UZH-FPV FPV/VIO dataset — download sequences from https://fpv.ifi.uzh
 
 Run monocular image-sequence SLAM:
 ```bash
-pixi run bash scripts/run-stella-uzh-fpv.sh --dataset /path/to/uzh-fpv/indoor_forward_7_snapdragon_with_gt
-# or if you point directly to the img folder:
-# pixi run bash scripts/run-stella-uzh-fpv.sh --dataset /path/to/uzh-fpv/indoor_forward_7_snapdragon_with_gt/img
+pixi run bash scripts/run-stella-uzh-fpv.sh --dataset dataset/indoor_forward_9_snapdragon_with_gt
 ```
 What the script does:
-- Prepares ordered symlinks of left images under `dataset/uzh_fpv_<sequence>_mono/img`
+- Resolves relative dataset paths (e.g., `dataset/...`) against the repo root
+- Uses `left_images.txt` (cam0/left) to create a temporary ordered symlink sequence (cleaned up on exit)
+- Image order follows the sequence in `left_images.txt`, not filename sorting in `<dataset>/img`
 - Uses config `lib/stella_vslam/example/uzh_fpv/UZH_FPV_mono.yaml` and vocab `dataset/orb_vocab.fbow`
 - Runs `run_image_slam` (Pangolin viewer, frame-skip 1)
 
