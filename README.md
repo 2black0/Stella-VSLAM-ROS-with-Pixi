@@ -197,6 +197,25 @@ Pangolin will appear; this pipeline uses intra-process communications to avoid c
 --temporal-mapping          enable temporal mapping
 ```
 
+### For `run_euroc_slam` (Image Sequence)
+```
+-h, --help                  produce help message
+-v, --vocab arg             vocabulary file path
+-d, --data-dir arg          directory path which contains dataset
+-c, --config arg            config file path
+--frame-skip arg (=1)       interval of frame skip
+--no-sleep                  not wait for next frame in real time
+--auto-term                 automatically terminate the viewer
+--log-level arg (=info)     log level (trace, debug, info, warn, err, critical, off)
+--eval-log-dir arg          store trajectories + tracking times (TUM format; dir must exist)
+--map-db-in arg             load a map from this path
+--map-db-out arg            store a map database at this path after SLAM
+--disable-mapping           disable mapping module
+--temporal-mapping          enable temporal mapping
+--equal-hist                apply histogram equalization
+--viewer arg                viewer type (pangolin_viewer, iridescence_viewer, socket_publisher, none)
+```
+
 ### For `run_slam` (ROS 2)
 ```
 -v, --vocab arg             vocabulary file path
