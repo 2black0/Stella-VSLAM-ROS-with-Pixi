@@ -5,12 +5,12 @@
 ![Stella-VSLAM-ROS2](assets/image-stella-vslam.png)
 
 ### ✨ Features
+
 - 🎯 **Modern SLAM**: Based on ORB-SLAM with improvements and active maintenance
 - 🤖 **ROS 2 Integration**: Full ROS 2 Humble support with topic-based communication
 - 📦 **Pixi Environment**: Reproducible builds with isolated dependencies
 - 🎮 **Multiple Viewers**: Support for Pangolin, Iridescence, and Socket viewers
 - 🌐 **Multiple Camera Models**: Perspective, Fisheye, Equirectangular support
-
 
 ---
 
@@ -62,14 +62,16 @@ pixi run bash scripts/check-stella-ros.sh
 
 ### 🤖 ROS 2 Example (With Pangolin Viewer)
 
-1) Terminal 1: Image Publisher
+1. Terminal 1: Image Publisher
+
 ```bash
 pixi shell
 source ros2_ws/install/setup.bash
 ros2 run image_publisher image_publisher_node dataset/aist_living_lab_1/video.mp4 --ros-args --remap /image_raw:=/camera/image_raw
 ```
 
-2) Terminal 2: SLAM Node (Mapping)
+2. Terminal 2: SLAM Node (Mapping)
+
 ```bash
 pixi shell
 source ros2_ws/install/setup.bash
@@ -78,7 +80,8 @@ ros2 run stella_vslam_ros run_slam -v dataset/orb_vocab.fbow -c lib/stella_vslam
 
 File map.msg will be saved after finished.
 
-3) Terminal 2: Localization Mode (Load Map)
+3. Terminal 2: Localization Mode (Load Map)
+
 ```bash
 pixi shell
 source ros2_ws/install/setup.bash
@@ -88,6 +91,7 @@ ros2 run stella_vslam_ros run_slam --disable-mapping -v dataset/orb_vocab.fbow -
 Load map.msg that saved from process before.
 
 📡 ROS 2 Topics
+
 ```
 /camera/image_raw           # Input image
 /run_slam/camera_pose       # Camera pose (Odometry)
@@ -96,23 +100,27 @@ Load map.msg that saved from process before.
 ```
 
 ### 🧩 ROS 2 Composable (Intra-Process, Zero-Copy Friendly)
+
 All nodes run in a single process to avoid DDS serialization (faster for large videos).
 
-1) Terminal 1: Run component container with intra-process communication
+1. Terminal 1: Run component container with intra-process communication
+
 ```bash
 pixi shell
 source ros2_ws/install/setup.bash
 ros2 run rclcpp_components component_container_mt --ros-args -r __node:=slam_container -p use_intra_process_comms:=true
 ```
 
-2) Terminal 3: Load SLAM with Pangolin
+2. Terminal 3: Load SLAM with Pangolin
+
 ```bash
 pixi shell
 source ros2_ws/install/setup.bash
 ros2 component load /slam_container stella_vslam_ros stella_vslam_ros::System --node-name run_slam --param vocab_file_path:=dataset/orb_vocab.fbow --param setting_file_path:=lib/stella_vslam/example/aist/equirectangular.yaml --param map_db_path_out:=map.msg --param viewer:=pangolin_viewer --param publish_tf:=false --param encoding:=bgr8 --param qos_reliability:=reliable
 ```
 
-3) Terminal 2: Load video publisher (adjust video path if needed)
+3. Terminal 2: Load video publisher (adjust video path if needed)
+
 ```bash
 pixi shell
 source ros2_ws/install/setup.bash
@@ -130,6 +138,7 @@ bash scripts/run-stella-simple.sh
 ```
 
 This script automatically:
+
 - Clones & builds `stella_vslam_examples`
 - Runs `run_video_slam` with Pangolin Viewer
 
@@ -138,10 +147,13 @@ This script automatically:
 Dataset: UZH-FPV FPV/VIO dataset — download sequences from https://fpv.ifi.uzh.ch/datasets/
 
 Run monocular image-sequence SLAM:
+
 ```bash
 pixi run bash scripts/run-stella-uzh-fpv.sh --dataset dataset/indoor_forward_9_snapdragon_with_gt
 ```
+
 What the script does:
+
 - Resolves relative dataset paths (e.g., `dataset/...`) against the repo root
 - Uses `left_images.txt` (cam0/left) to create a temporary ordered symlink sequence (cleaned up on exit)
 - Image order follows the sequence in `left_images.txt`, not filename sorting in `<dataset>/img`
@@ -153,11 +165,13 @@ What the script does:
 Run SLAM with **AirSim simulator** as camera input source:
 
 #### Prerequisites:
+
 1. **AirSim simulator running** (Unreal Engine or Unity)
 2. **ORB vocabulary**: `dataset/orb_vocab.fbow`
 3. **Camera config**: Create appropriate YAML config for your AirSim camera
 
 #### Run:
+
 ```bash
 pixi shell
 ./bin/run_camera_airsim_slam \
@@ -169,6 +183,7 @@ pixi shell
 ```
 
 #### AirSim-specific Arguments:
+
 ```
 --airsim-host arg (=127.0.0.1)    AirSim server IP address
 --airsim-port arg (=41451)         AirSim RPC port
@@ -183,6 +198,7 @@ pixi shell
 ## ⚙️ Command-Line Arguments
 
 ### For `run_slam` (ROS 2)
+
 ```
 -v, --vocab arg             vocabulary file path
 -c, --config arg            config file path
@@ -202,6 +218,7 @@ ROS 2 Parameters:
 ```
 
 ### For `run_video_slam` (Non-ROS)
+
 ```
 -h, --help                  produce help message
 -v, --vocab arg             vocabulary file path
@@ -219,6 +236,7 @@ ROS 2 Parameters:
 ```
 
 ### For `run_euroc_slam` (Image Sequence)
+
 ```
 -h, --help                  produce help message
 -v, --vocab arg             vocabulary file path
@@ -273,6 +291,7 @@ stella-vslam-ros/
 ## 🛠️ Troubleshooting
 
 ### Build Fails
+
 ```bash
 rm -rf .pixi lib ros2_ws pixi.lock
 pixi install
@@ -280,6 +299,7 @@ pixi run bash scripts/build-stella.sh
 ```
 
 ### Viewer Not Showing
+
 - Make sure you're running in a desktop environment with GUI support
 - Check that the `--viewer pangolin_viewer` flag is included
 
