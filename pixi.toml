@@ -14,6 +14,8 @@ scripts = ["install/setup.bash"]
 build = "bash scripts/build-stella.sh && bash scripts/build-ros2-colcon-stella.sh"
 dataset-download = "bash scripts/download-stella-example.sh"
 check = "bash scripts/check-stella-ros.sh"
+test = "bash scripts/run-stella-simple.sh"
+test-uzhfpv = "bash scripts/run-stella-uzh-fpv.sh --dataset dataset/indoor_forward_3_snapdragon_with_gt --config config/UZH_FPV_mono.yaml"
 clean-all = "bash scripts/clean-all.sh"
 
 # Dependencies used by all environments

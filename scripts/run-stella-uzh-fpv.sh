@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Jalankan contoh monocular dengan dataset UZH-FPV (pilih sequence lewat argumen).
-# Gunakan: pixi run bash scripts/run-stella-uzh-fpv.sh --dataset /path/to/uzh-fpv[/img]
+# Gunakan: pixi run bash scripts/run-stella-uzh-fpv.sh --dataset /path/to/uzh-fpv[/img] --config /path/to/UZH_FPV_mono.yaml
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 PROJECT_ROOT="$SCRIPT_DIR/.."
@@ -12,16 +12,36 @@ EXAMPLES_DIR="$LIB_DIR/stella_vslam_examples"
 BUILD_DIR="$EXAMPLES_DIR/build"
 
 VOCAB="$DATASET_DIR/orb_vocab.fbow"
-CONFIG="$LIB_DIR/stella_vslam/example/uzh_fpv/UZH_FPV_mono.yaml"
+CONFIG="$PROJECT_ROOT/config/UZH_FPV_mono.yaml"
 
 # Default dataset location (override via SRC_DATASET)
 SRC_DATASET="${SRC_DATASET:-$HOME/Downloads/py-vslam/datasets/uzh-fpv}"
 
 # Argumen opsional: --dataset /path/to/uzh-fpv atau /path/to/uzh-fpv/img
-if [ $# -ge 2 ] && [ "$1" = "--dataset" ]; then
-    SRC_DATASET="$2"
-    shift 2
-fi
+# Argumen opsional: --config /path/to/UZH_FPV_mono.yaml
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --dataset)
+            if [ $# -lt 2 ]; then
+                echo "❌ --dataset membutuhkan path."
+                exit 1
+            fi
+            SRC_DATASET="$2"
+            shift 2
+            ;;
+        --config)
+            if [ $# -lt 2 ]; then
+                echo "❌ --config membutuhkan path."
+                exit 1
+            fi
+            CONFIG="$2"
+            shift 2
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
 
 # Jika path relatif, coba resolve terhadap cwd lalu project root
 if [ "${SRC_DATASET:0:1}" != "/" ]; then
@@ -29,6 +49,15 @@ if [ "${SRC_DATASET:0:1}" != "/" ]; then
         SRC_DATASET="$(cd "$SRC_DATASET" && pwd)"
     elif [ -d "$PROJECT_ROOT/$SRC_DATASET" ]; then
         SRC_DATASET="$(cd "$PROJECT_ROOT/$SRC_DATASET" && pwd)"
+    fi
+fi
+
+# Jika config relatif, coba resolve terhadap cwd lalu project root
+if [ "${CONFIG:0:1}" != "/" ]; then
+    if [ -f "$CONFIG" ]; then
+        CONFIG="$(cd "$(dirname "$CONFIG")" && pwd)/$(basename "$CONFIG")"
+    elif [ -f "$PROJECT_ROOT/$CONFIG" ]; then
+        CONFIG="$(cd "$PROJECT_ROOT" && pwd)/$CONFIG"
     fi
 fi
 

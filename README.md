@@ -49,6 +49,13 @@ pixi run build
 pixi run dataset-download
 ```
 
+This downloads:
+
+- ORB vocabulary (`dataset/orb_vocab.fbow`)
+- AIST Living Lab dataset (`dataset/aist_living_lab_1`)
+- UZH-FPV dataset (`dataset/indoor_forward_3_snapdragon_with_gt`)
+- UZH-FPV calibration (`dataset/indoor_forward_calib_snapdragon`)
+
 ### 4️⃣ Verify Build
 
 ```bash
@@ -110,7 +117,7 @@ source ros2_ws/install/setup.bash
 ros2 run rclcpp_components component_container_mt --ros-args -r __node:=slam_container -p use_intra_process_comms:=true
 ```
 
-2. Terminal 3: Load SLAM with Pangolin
+2. Terminal 2: Load SLAM with Pangolin
 
 ```bash
 pixi shell
@@ -118,7 +125,7 @@ source ros2_ws/install/setup.bash
 ros2 component load /slam_container stella_vslam_ros stella_vslam_ros::System --node-name run_slam --param vocab_file_path:=dataset/orb_vocab.fbow --param setting_file_path:=lib/stella_vslam/example/aist/equirectangular.yaml --param map_db_path_out:=map.msg --param viewer:=pangolin_viewer --param publish_tf:=false --param encoding:=bgr8 --param qos_reliability:=reliable
 ```
 
-3. Terminal 2: Load video publisher (adjust video path if needed)
+3. Terminal 3: Load video publisher (adjust video path if needed)
 
 ```bash
 pixi shell
@@ -130,9 +137,20 @@ Pangolin will appear; this pipeline uses intra-process communications to avoid c
 
 ### ⚡ Non-ROS Example (Direct Video Processing)
 
+### 🎥 AIST Living Lab Equirectangular (Video File)
+
+Dataset: `dataset/aist_living_lab_1/video.mp4`
+
 Run SLAM directly without ROS middleware:
 
 ```bash
+pixi run test
+```
+
+Manual (inside Pixi shell):
+
+```bash
+pixi shell
 bash scripts/run-stella-simple.sh
 ```
 
@@ -141,14 +159,35 @@ This script automatically:
 - Clones & builds `stella_vslam_examples`
 - Runs `run_video_slam` with Pangolin Viewer
 
-### 🏂 UZH-FPV Monocular (Image Sequence)
+Direct `run_video_slam` invocation:
+
+```bash
+pixi shell
+./lib/stella_vslam_examples/build/run_video_slam \
+    -v dataset/orb_vocab.fbow \
+    -m dataset/aist_living_lab_1/video.mp4 \
+    -c lib/stella_vslam/example/aist/equirectangular.yaml \
+    --map-db-out map.msg \
+    --frame-skip 2 \
+    --viewer pangolin_viewer \
+    --no-sleep
+```
+
+#### 🏂 UZH-FPV Monocular (Image Sequence)
 
 Dataset: UZH-FPV FPV/VIO dataset — download sequences from https://fpv.ifi.uzh.ch/datasets/
 
 Run monocular image-sequence SLAM:
 
 ```bash
-pixi run bash scripts/run-stella-uzh-fpv.sh --dataset dataset/indoor_forward_9_snapdragon_with_gt
+pixi run test-uzhfpv
+```
+
+Manual (inside Pixi shell):
+
+```bash
+pixi shell
+bash scripts/run-stella-uzh-fpv.sh --dataset dataset/indoor_forward_3_snapdragon_with_gt --config config/UZH_FPV_mono.yaml
 ```
 
 What the script does:
@@ -156,7 +195,7 @@ What the script does:
 - Resolves relative dataset paths (e.g., `dataset/...`) against the repo root
 - Uses `left_images.txt` (cam0/left) to create a temporary ordered symlink sequence (cleaned up on exit)
 - Image order follows the sequence in `left_images.txt`, not filename sorting in `<dataset>/img`
-- Uses config `lib/stella_vslam/example/uzh_fpv/UZH_FPV_mono.yaml` and vocab `dataset/orb_vocab.fbow`
+- Uses config `config/UZH_FPV_mono.yaml` and vocab `dataset/orb_vocab.fbow`
 - Runs `run_image_slam` (Pangolin viewer, frame-skip 1)
 
 ### 🚁 AirSim Example (Real-time with Simulator)
