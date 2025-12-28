@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if [ -d .pixi ]; then
+  find .pixi -mindepth 1 -maxdepth 1 ! -name config.toml -exec rm -rf {} +
+fi
+
 rm -rf \
-  .pixi \
   pixi.lock \
   lib \
   dataset \

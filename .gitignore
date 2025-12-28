@@ -3,7 +3,7 @@
 !.pixi/config.toml
 
 # Build artifacts
-bin/
+bin/*
 dataset/
 lib/
 ros2_ws/build/
