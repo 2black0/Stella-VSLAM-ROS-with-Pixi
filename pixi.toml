@@ -9,9 +9,12 @@ platforms = ["linux-64"]
 # For activation scripts, we use bash for Unix-like systems
 scripts = ["install/setup.bash"]
 
-# To build you can use - `pixi run -e <ros distro> build <Any other temporary args>`
+# To build you can use - `pixi run build`
 [feature.build.target.unix.tasks]
-build = "colcon build --symlink-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DPython_FIND_VIRTUALENV=ONLY -DPython3_FIND_VIRTUALENV=ONLY"
+build = "bash scripts/build-stella.sh && bash scripts/build-ros2-colcon-stella.sh"
+dataset-download = "bash scripts/download-stella-example.sh"
+check = "bash scripts/check-stella-ros.sh"
+clean-all = "bash scripts/clean-all.sh"
 
 # Dependencies used by all environments
 [dependencies]

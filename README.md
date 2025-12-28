@@ -40,20 +40,19 @@ or run with `pixi run <command>`.
 ### 2️⃣ Build Stella VSLAM & ROS 2 Wrapper
 
 ```bash
-pixi run bash scripts/build-stella.sh
-pixi run bash scripts/build-ros2-colcon-stella.sh
+pixi run build
 ```
 
 ### 3️⃣ Download Example Dataset
 
 ```bash
-pixi run bash scripts/download-stella-example.sh
+pixi run dataset-download
 ```
 
 ### 4️⃣ Verify Build
 
 ```bash
-pixi run bash scripts/check-stella-ros.sh
+pixi run check
 ```
 
 ---
@@ -295,7 +294,7 @@ stella-vslam-ros/
 ```bash
 rm -rf .pixi lib ros2_ws pixi.lock
 pixi install
-pixi run bash scripts/build-stella.sh
+pixi run build
 ```
 
 ### Viewer Not Showing
