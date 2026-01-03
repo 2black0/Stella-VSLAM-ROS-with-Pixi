@@ -235,7 +235,7 @@ echo "------------------------------------------"
 
 cd "$LIB_DIR"
 if [ ! -d "stella_vslam" ]; then
-    git clone --recursive --depth 1 https://github.com/stella-cv/stella_vslam.git
+    git clone --recursive --depth 1 https://github.com/2black0/stella_vslam.git
 else
     echo "ℹ️  Folder stella_vslam sudah ada."
 fi
@@ -359,7 +359,7 @@ cd "$LIB_DIR"
 # Clone original examples if not exists
 if [ ! -d "stella_vslam_examples" ]; then
     echo "🔽 Cloning stella_vslam_examples..."
-    git clone --recursive --depth 1 https://github.com/stella-cv/stella_vslam_examples.git
+    git clone --recursive --depth 1 https://github.com/2black0/stella_vslam_examples.git
 else
     echo "ℹ️  Folder stella_vslam_examples sudah ada."
 fi
