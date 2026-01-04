@@ -1,30 +1,19 @@
 # pixi environments
 .pixi/*
 !.pixi/config.toml
+pixi.lock
 
 # Build artifacts
-bin/*
 dataset/
 ros2_ws/build/
 ros2_ws/install/
 ros2_ws/log/
 .ros/
-lib/iridescence/build
-lib/iridescence_viewer/buildlib/iridescence_viewer/build
-lib/Pangolin/build
-lib/pangolin_viewer/build
-lib/socket_publisher/build
-lib/socket.io-client-cpp/build
-lib/stella_vslam/build
-lib/stella_vslam_examples/build
-
-# Lock file
-pixi.lock
+lib/*/build/
+lib/socket_viewer/node_modules/
 
 # Viewer config (auto-generated)
 imgui.ini
-
 .DS_Store
-socket_viewer/node_modules
 
 map.msg

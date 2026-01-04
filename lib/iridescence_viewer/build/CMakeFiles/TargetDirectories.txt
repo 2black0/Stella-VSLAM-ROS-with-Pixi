@@ -1,7 +1,0 @@
-/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/lib/iridescence_viewer/build/CMakeFiles/iridescence_viewer.dir
-/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/lib/iridescence_viewer/build/CMakeFiles/edit_cache.dir
-/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/lib/iridescence_viewer/build/CMakeFiles/rebuild_cache.dir
-/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/lib/iridescence_viewer/build/CMakeFiles/list_install_components.dir
-/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/lib/iridescence_viewer/build/CMakeFiles/install.dir
-/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/lib/iridescence_viewer/build/CMakeFiles/install/local.dir
-/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/lib/iridescence_viewer/build/CMakeFiles/install/strip.dir
