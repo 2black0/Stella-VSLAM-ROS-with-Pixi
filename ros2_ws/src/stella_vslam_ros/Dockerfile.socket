@@ -1,0 +1,175 @@
+FROM ros:humble
+ENV DEBIAN_FRONTEND noninteractive
+
+# install dependencies via apt
+ENV DEBCONF_NOWARNINGS yes
+RUN set -x && \
+  apt-get update -y -qq && \
+  apt-get upgrade -y -qq --no-install-recommends && \
+  : "basic dependencies" && \
+  apt-get install -y -qq \
+    build-essential \
+    pkg-config \
+    cmake \
+    git \
+    wget \
+    curl \
+    tar \
+    unzip && \
+  : "g2o dependencies" && \
+  apt-get install -y -qq \
+    libgoogle-glog-dev \
+    libatlas-base-dev \
+    libsuitesparse-dev && \
+  : "backward-cpp dependencies" && \
+  apt install -y -qq binutils-dev && \
+  : "other dependencies" && \
+  apt-get install -y -qq \
+    libyaml-cpp-dev \ 
+    libopencv-dev \
+    libeigen3-dev && \
+  : "remove cache" && \
+  apt-get autoremove -y -qq && \
+  rm -rf /var/lib/apt/lists/*
+
+ARG CMAKE_INSTALL_PREFIX=/usr/local
+ARG NUM_THREADS=1
+
+ENV CPATH=${CMAKE_INSTALL_PREFIX}/include:${CPATH}
+ENV C_INCLUDE_PATH=${CMAKE_INSTALL_PREFIX}/include:${C_INCLUDE_PATH}
+ENV CPLUS_INCLUDE_PATH=${CMAKE_INSTALL_PREFIX}/include:${CPLUS_INCLUDE_PATH}
+ENV LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${LIBRARY_PATH}
+ENV LD_LIBRARY_PATH=${CMAKE_INSTALL_PREFIX}/lib:${LD_LIBRARY_PATH}
+
+ENV NVIDIA_VISIBLE_DEVICES ${NVIDIA_VISIBLE_DEVICES:-all}
+ENV NVIDIA_DRIVER_CAPABILITIES ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
+
+# socket.io-client-cpp
+ARG SIOCLIENT_COMMIT=ff6ef08e45c594e33aa6bc19ebdd07954914efe0
+WORKDIR /tmp
+RUN set -x && \
+  git clone https://github.com/shinsumicco/socket.io-client-cpp.git && \
+  cd socket.io-client-cpp && \
+  git checkout ${SIOCLIENT_COMMIT} && \
+  git submodule init && \
+  git submodule update && \
+  mkdir -p build && \
+  cd build && \
+  cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} \
+    -DBUILD_UNIT_TESTS=OFF \
+    .. && \
+  make -j${NUM_THREADS} && \
+  make install && \
+  cd /tmp && \
+  rm -rf *
+ENV sioclient_DIR=${CMAKE_INSTALL_PREFIX}/lib/cmake/sioclient
+
+# protobuf
+WORKDIR /tmp
+RUN set -x && \
+  apt-get update -y -qq && \
+  apt-get upgrade -y -qq --no-install-recommends && \
+  apt-get install -y -qq autogen autoconf libtool && \
+  wget -q https://github.com/google/protobuf/archive/v3.6.1.tar.gz && \
+  tar xf v3.6.1.tar.gz && \
+  cd protobuf-3.6.1 && \
+  ./autogen.sh && \
+  ./configure --prefix=${CMAKE_INSTALL_PREFIX} --enable-static=no && \
+  make -j${NUM_THREADS} && \
+  make install && \
+  cd /tmp && \
+  rm -rf * && \
+  apt-get purge -y -qq autogen autoconf libtool && \
+  apt-get autoremove -y -qq && \
+  rm -rf /var/lib/apt/lists/*
+
+# backward-cpp
+ARG BACKWARD_CPP_COMMIT=5ffb2c879ebdbea3bdb8477c671e32b1c984beaa
+WORKDIR /tmp
+RUN set -x && \
+  git clone https://github.com/bombela/backward-cpp.git && \
+  cd backward-cpp && \
+  git checkout ${BACKWARD_CPP_COMMIT} && \
+  mkdir -p build && \
+  cd build && \
+  cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} \
+    .. && \
+  make -j${NUM_THREADS} && \
+  make install && \
+  cd /tmp && \
+  rm -rf *
+
+# stella_vslam
+RUN set -x && \
+  : "stella_vslam dependencies" && \
+  apt-get update -y -qq && \
+  apt-get install -y -qq \
+    ros-${ROS_DISTRO}-libg2o && \
+  : "remove cache" && \
+  apt-get autoremove -y -qq && \
+  rm -rf /var/lib/apt/lists/*
+
+RUN set -x && \
+  git clone --depth 1 https://github.com/stella-cv/stella_vslam.git && \
+  cd stella_vslam && \
+  git submodule update -i --recursive && \
+  mkdir -p build && \
+  cd build && \
+  CMAKE_PREFIX_PATH=/opt/ros/${ROS_DISTRO}/lib/cmake cmake .. && \
+  make -j${NUM_THREADS} && \
+  make install && \
+  rm -rf CMakeCache.txt CMakeFiles Makefile cmake_install.cmake example src && \
+  chmod -R 777 ./*
+
+ARG SOCKET_PUBLISHER_COMMIT=e2aaf66b27a6477b478bc8e86992907f09f29188
+WORKDIR /tmp
+RUN set -x && \
+  git clone https://github.com/stella-cv/socket_publisher.git && \
+  cd socket_publisher && \
+  git checkout ${SOCKET_PUBLISHER_COMMIT} && \
+  mkdir -p build && \
+  cd build && \
+  CMAKE_PREFIX_PATH=/opt/ros/${ROS_DISTRO}/lib/cmake cmake \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} \
+    .. && \
+  make -j${NUM_THREADS} && \
+  make install && \
+  cd /tmp && \
+  rm -rf *
+
+# ROS2
+RUN set -x && \
+  apt-get update -y -qq && \
+  : "install ROS2 packages" && \
+  apt-get install -y -qq \
+    ros-${ROS_DISTRO}-image-transport \
+    ros-${ROS_DISTRO}-cv-bridge \
+    ros-${ROS_DISTRO}-rosbag2-storage-mcap \
+    python3-pip \
+    python3-colcon-common-extensions && \
+  pip3 install -U \
+    argcomplete && \
+  : "remove cache" && \
+  apt-get autoremove -y -qq && \
+  rm -rf /var/lib/apt/lists/*
+
+WORKDIR /ros2_ws
+COPY . /ros2_ws/src/stella_vslam_ros
+
+RUN set -x && \
+  : "build ROS2 packages" && \
+  bash -c "source /opt/ros/${ROS_DISTRO}/setup.bash; \
+  colcon build --parallel-workers ${NUM_THREADS} --cmake-args \
+    -DUSE_STACK_TRACE_LOGGER=ON"
+
+RUN set -x && \
+  sh -c "echo '#'\!'/bin/bash\nset -e\nsource /opt/ros/${ROS_DISTRO}/setup.bash\nsource /ros2_ws/install/setup.bash\nexec \"\$@\"' > /ros_entrypoint.sh" && \
+  chmod u+x /ros_entrypoint.sh
+
+ENTRYPOINT ["/ros_entrypoint.sh"]
+CMD ["bash"]

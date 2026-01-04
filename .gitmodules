@@ -1,3 +1,0 @@
-[submodule "ros2_ws/src/stella_vslam_ros"]
-	path = ros2_ws/src/stella_vslam_ros
-	url = https://github.com/2black0/stella_vslam_ros
