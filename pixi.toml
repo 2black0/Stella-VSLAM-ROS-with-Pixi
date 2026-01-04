@@ -7,16 +7,21 @@ platforms = ["linux-64"]
 # This will automatically activate the ros workspace on activation
 [target.unix.activation]
 # For activation scripts, we use bash for Unix-like systems
-scripts = ["install/setup.bash"]
+scripts = ["scripts/setup.bash"]
 
 # To build you can use - `pixi run build`
 [feature.build.target.unix.tasks]
-build = "bash scripts/build-stella.sh && bash scripts/build-ros2-colcon-stella.sh"
-dataset-download = "bash scripts/download-stella-example.sh"
-check = "bash scripts/check-stella-ros.sh"
-test = "bash scripts/run-stella-simple.sh"
-test-uzhfpv = "bash scripts/run-stella-uzh-fpv.sh --dataset dataset/indoor_forward_3_snapdragon_with_gt --config config/UZH_FPV_mono.yaml"
-clean-all = "bash scripts/clean-all.sh"
+build-deps = "bash scripts/build-deps.sh"
+check-deps = "bash scripts/check-deps.sh"
+build = "bash scripts/build.sh"
+build-ros = "bash scripts/build-ros.sh"
+dataset = "bash scripts/dataset.sh"
+check = "bash scripts/check.sh"
+check-ros = "bash scripts/check-ros.sh"
+check-dataset = "bash scripts/check-dataset.sh"
+test-aist = "bash scripts/test-aist.sh"
+test-uzh = "bash scripts/test-uzh.sh"
+clean = "bash scripts/clean.sh"
 
 # Dependencies used by all environments
 [dependencies]
@@ -34,6 +39,10 @@ gdown = "*"
 
 [target.linux.dependencies]
 libgl-devel = "*"
+libgl = "*"
+libegl = "*"
+libegl-devel = "*"
+epoxy = "*"
 
 # Define all the different ROS environments
 # Each environment corresponds to a different ROS distribution
@@ -59,6 +68,8 @@ g2o = "*"
 boost-cpp = "*"
 glew = "*"
 protobuf = "*"
+nlohmann_json = "*"
+inja = "*"
 libopencv = "*"
 glog = "*"
 gflags = "*"

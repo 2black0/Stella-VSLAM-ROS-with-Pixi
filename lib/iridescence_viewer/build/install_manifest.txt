@@ -1,0 +1,7 @@
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/lib/cmake/iridescence_viewer/iridescence_viewerConfigVersion.cmake
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/lib/cmake/iridescence_viewer/iridescence_viewerConfig.cmake
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/lib/cmake/iridescence_viewer/FindIridescence.cmake
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/lib/cmake/iridescence_viewer/iridescence_viewerTargets.cmake
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/lib/cmake/iridescence_viewer/iridescence_viewerTargets-relwithdebinfo.cmake
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/lib/libiridescence_viewer.so
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/include/iridescence_viewer/viewer.h

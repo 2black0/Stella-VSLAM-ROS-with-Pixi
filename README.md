@@ -37,16 +37,40 @@ pixi shell
 
 or run with `pixi run <command>`.
 
-### 2️⃣ Build Stella VSLAM & ROS 2 Wrapper
+### 2️⃣ Vendored Dependencies
+
+All required repos are already included under `lib/` and `ros2_ws/` (no submodules).
+
+### 3️⃣ Build Viewer Dependencies
 
 ```bash
-pixi run build
+pixi run build-deps -- --all
 ```
 
-### 3️⃣ Download Example Dataset
+To build only one viewer dependency:
 
 ```bash
-pixi run dataset-download
+pixi run build-deps -- --iridescence
+pixi run build-deps -- --pangolin
+pixi run build-deps -- --socket
+```
+
+### 4️⃣ Build Stella VSLAM Core + Examples
+
+```bash
+pixi run build -- --all
+```
+
+### 5️⃣ Build ROS 2 Wrapper (Optional)
+
+```bash
+pixi run build-ros
+```
+
+### 6️⃣ Download Example Dataset
+
+```bash
+pixi run dataset
 ```
 
 This downloads:
@@ -54,12 +78,15 @@ This downloads:
 - ORB vocabulary (`dataset/orb_vocab.fbow`)
 - AIST Living Lab dataset (`dataset/aist_living_lab_1`)
 - UZH-FPV dataset (`dataset/indoor_forward_3_snapdragon_with_gt`)
-- UZH-FPV calibration (`dataset/indoor_forward_calib_snapdragon`)
+- UZH-FPV calibration (`dataset/indoor_forward_3_snapdragon_with_gt/indoor_forward_calib_snapdragon`)
 
-### 4️⃣ Verify Build
+### 7️⃣ Verify Build
 
 ```bash
+pixi run check-deps
 pixi run check
+pixi run check-ros
+pixi run check-dataset
 ```
 
 ---
@@ -144,19 +171,19 @@ Dataset: `dataset/aist_living_lab_1/video.mp4`
 Run SLAM directly without ROS middleware:
 
 ```bash
-pixi run test
+pixi run test-aist
 ```
 
 Manual (inside Pixi shell):
 
 ```bash
 pixi shell
-bash scripts/run-stella-simple.sh
+bash scripts/test-aist.sh
 ```
 
 This script automatically:
 
-- Clones & builds `stella_vslam_examples`
+- Builds `stella_vslam_examples`
 - Runs `run_video_slam` with Pangolin Viewer
 
 Direct `run_video_slam` invocation:
@@ -180,14 +207,14 @@ Dataset: UZH-FPV FPV/VIO dataset — download sequences from https://fpv.ifi.uzh
 Run monocular image-sequence SLAM:
 
 ```bash
-pixi run test-uzhfpv
+pixi run test-uzh
 ```
 
 Manual (inside Pixi shell):
 
 ```bash
 pixi shell
-bash scripts/run-stella-uzh-fpv.sh --dataset dataset/indoor_forward_3_snapdragon_with_gt --config config/UZH_FPV_mono.yaml
+bash scripts/test-uzh.sh
 ```
 
 What the script does:
@@ -195,7 +222,7 @@ What the script does:
 - Resolves relative dataset paths (e.g., `dataset/...`) against the repo root
 - Uses `left_images.txt` (cam0/left) to create a temporary ordered symlink sequence (cleaned up on exit)
 - Image order follows the sequence in `left_images.txt`, not filename sorting in `<dataset>/img`
-- Uses config `config/UZH_FPV_mono.yaml` and vocab `dataset/orb_vocab.fbow`
+- Uses config `lib/stella_vslam/example/uzh_fpv/UZH_FPV_mono.yaml` and vocab `dataset/orb_vocab.fbow`
 - Runs `run_image_slam` (Pangolin viewer, frame-skip 1)
 
 ### 🚁 AirSim Example (Real-time with Simulator)
@@ -304,11 +331,13 @@ stella-vslam-ros/
 │   └── run_camera_airsim_log_slam
 ├── dataset/                    # Example datasets
 │   ├── orb_vocab.fbow
-│   └── aist_living_lab_1/
-├── lib/                        # Built libraries
+│   ├── aist_living_lab_1/
+│   └── indoor_forward_3_snapdragon_with_gt/
+│       └── indoor_forward_calib_snapdragon/
+├── lib/                        # Submodule sources
 │   ├── stella_vslam/
 │   ├── pangolin_viewer/
-│   ├── AirSim/                 # AirSim headers & libraries
+│   ├── AirSim/
 │   └── stella_vslam_examples/
 │       └── build/
 │           ├── run_camera_airsim_slam
@@ -317,10 +346,17 @@ stella-vslam-ros/
 ├── ros2_ws/                    # ROS 2 workspace
 │   └── src/stella_vslam_ros/
 ├── scripts/
-│   ├── build-stella.sh         # Build script (includes AirSim examples)
-│   ├── download-stella-example.sh
-│   ├── check-stella-ros.sh
-│   └── run-stella-simple.sh
+│   ├── build-deps.sh           # Build viewer dependencies + AirSim deps
+│   ├── build.sh                # Build stella_vslam core + examples
+│   ├── build-ros.sh            # Build ROS 2 wrapper
+│   ├── check-dataset.sh        # Verify dataset layout
+│   ├── check-deps.sh           # Verify build dependencies
+│   ├── check.sh                # Verify core build + examples
+│   ├── check-ros.sh            # Verify ROS 2 build
+│   ├── dataset.sh
+│   ├── test-aist.sh
+│   ├── test-uzh.sh
+│   └── clean.sh
 └── pixi.toml                   # Pixi configuration
 ```
 
@@ -331,9 +367,11 @@ stella-vslam-ros/
 ### Build Fails
 
 ```bash
-rm -rf .pixi lib ros2_ws pixi.lock
+bash scripts/clean.sh
 pixi install
-pixi run build
+pixi run build-deps -- --all
+pixi run build -- --all
+pixi run build-ros
 ```
 
 ### Viewer Not Showing

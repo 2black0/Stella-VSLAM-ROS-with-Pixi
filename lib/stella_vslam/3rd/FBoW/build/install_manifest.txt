@@ -1,0 +1,14 @@
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/share/cmake/fbow/fbowConfig.cmake
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/lib/libfbow.so.0.0.1
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/lib/libfbow.so.0.0
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/lib/libfbow.so
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/share/cmake/fbow/fbowTargets.cmake
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/share/cmake/fbow/fbowTargets-relwithdebinfo.cmake
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/include/fbow/fbow.h
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/include/fbow/vocabulary_creator.h
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/include/fbow/fbow_exports.h
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/include/fbow/type.h
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/include/fbow/bow_feat_vector.h
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/include/fbow/vocabulary.h
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/include/fbow/cpu.h
+/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/.pixi/envs/default/include/fbow/bow_vector.h

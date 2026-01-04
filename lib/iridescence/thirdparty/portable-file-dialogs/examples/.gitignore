@@ -1,9 +1,0 @@
-example
-example.exe
-
-Debug
-Release
-*.vcxproj.user
-
-.idea
-cmake-build-*

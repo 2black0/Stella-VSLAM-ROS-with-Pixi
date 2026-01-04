@@ -5,11 +5,18 @@
 # Build artifacts
 bin/*
 dataset/
-lib/
 ros2_ws/build/
 ros2_ws/install/
 ros2_ws/log/
 .ros/
+lib/iridescence/build
+lib/iridescence_viewer/buildlib/iridescence_viewer/build
+lib/Pangolin/build
+lib/pangolin_viewer/build
+lib/socket_publisher/build
+lib/socket.io-client-cpp/build
+lib/stella_vslam/build
+lib/stella_vslam_examples/build
 
 # Lock file
 pixi.lock
