@@ -10,6 +10,7 @@ ros2_ws/install/
 ros2_ws/log/
 .ros/
 lib/*/build/
+lib/stella_vslam/3rd/*/build
 lib/socket_viewer/node_modules/
 
 # Viewer config (auto-generated)
