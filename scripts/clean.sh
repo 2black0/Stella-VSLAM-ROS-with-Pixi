@@ -18,6 +18,7 @@ TARGETS=(
     "$PROJECT_ROOT/lib/socket_publisher/build"
     "$PROJECT_ROOT/lib/stella_vslam/build"
     "$PROJECT_ROOT/lib/stella_vslam_examples/build"
+    "$PROJECT_ROOT/lib/stella_vslam/3rd/FBoW/build"
 )
 
 echo "=========================================="

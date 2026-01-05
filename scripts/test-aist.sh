@@ -13,6 +13,28 @@ if [ -z "$CONDA_PREFIX" ]; then
     exit 1
 fi
 
+prepare_build_dir() {
+    local src_dir="$1"
+    local build_dir="$2"
+    local cache_file="$build_dir/CMakeCache.txt"
+    local src_dir_abs="$src_dir"
+
+    if [ -d "$src_dir" ]; then
+        src_dir_abs="$(cd "$src_dir" && pwd -P)"
+    fi
+
+    if [ -f "$cache_file" ]; then
+        local cached_src
+        cached_src=$(grep -m 1 "^CMAKE_HOME_DIRECTORY:INTERNAL=" "$cache_file" | cut -d= -f2-)
+        if [ -n "$cached_src" ] && [ "$cached_src" != "$src_dir_abs" ]; then
+            echo "INFO: Removing stale build dir $build_dir (was configured for $cached_src)"
+            rm -rf "$build_dir"
+        fi
+    fi
+
+    mkdir -p "$build_dir"
+}
+
 echo "=========================================="
 echo "   RUN STELLA VSLAM - AIST (VIDEO)"
 echo "=========================================="
@@ -36,7 +58,7 @@ fi
 # 3. Build examples if needed
 if [ ! -x "$BUILD_DIR/run_video_slam" ]; then
     echo "🔨 Building stella_vslam_examples..."
-    mkdir -p "$BUILD_DIR"
+    prepare_build_dir "$EXAMPLES_DIR" "$BUILD_DIR"
     cd "$BUILD_DIR"
     cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
     make -j"$(nproc)"

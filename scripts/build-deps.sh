@@ -78,6 +78,28 @@ require_repo() {
     fi
 }
 
+prepare_build_dir() {
+    local src_dir="$1"
+    local build_dir="$2"
+    local cache_file="$build_dir/CMakeCache.txt"
+    local src_dir_abs="$src_dir"
+
+    if [ -d "$src_dir" ]; then
+        src_dir_abs="$(cd "$src_dir" && pwd -P)"
+    fi
+
+    if [ -f "$cache_file" ]; then
+        local cached_src
+        cached_src=$(grep -m 1 "^CMAKE_HOME_DIRECTORY:INTERNAL=" "$cache_file" | cut -d= -f2-)
+        if [ -n "$cached_src" ] && [ "$cached_src" != "$src_dir_abs" ]; then
+            echo "INFO: Removing stale build dir $build_dir (was configured for $cached_src)"
+            rm -rf "$build_dir"
+        fi
+    fi
+
+    mkdir -p "$build_dir"
+}
+
 mkdir -p "$LIB_DIR"
 
 # Viewer dependencies
@@ -87,7 +109,8 @@ if [ "$BUILD_IRIDESCENCE" -eq 1 ]; then
     echo "Building iridescence..."
     cd "$LIB_DIR/iridescence"
 
-    mkdir -p build && cd build
+    prepare_build_dir "$LIB_DIR/iridescence" "$LIB_DIR/iridescence/build"
+    cd "$LIB_DIR/iridescence/build"
     cmake \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX" \
@@ -143,7 +166,8 @@ if [ "$BUILD_PANGOLIN" -eq 1 ]; then
     ensure_gl_symlink "$CONDA_PREFIX/lib/libEGL.so" "$CONDA_PREFIX/lib/libEGL.so.1"
 
     cd "$PANGOLIN_DIR"
-    mkdir -p build && cd build
+    prepare_build_dir "$PANGOLIN_DIR" "$PANGOLIN_DIR/build"
+    cd "$PANGOLIN_DIR/build"
     cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX" \
@@ -199,7 +223,8 @@ if [ "$BUILD_SOCKET" -eq 1 ]; then
     fi
 
     cd "$SOCKET_DIR"
-    mkdir -p build && cd build
+    prepare_build_dir "$SOCKET_DIR" "$SOCKET_DIR/build"
+    cd "$SOCKET_DIR/build"
     cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX" \

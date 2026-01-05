@@ -1,8 +1,0 @@
-/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/lib/stella_vslam/3rd/FBoW/build/CMakeFiles/uninstall.dir
-/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/lib/stella_vslam/3rd/FBoW/build/CMakeFiles/fbow.dir
-/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/lib/stella_vslam/3rd/FBoW/build/CMakeFiles/edit_cache.dir
-/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/lib/stella_vslam/3rd/FBoW/build/CMakeFiles/rebuild_cache.dir
-/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/lib/stella_vslam/3rd/FBoW/build/CMakeFiles/list_install_components.dir
-/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/lib/stella_vslam/3rd/FBoW/build/CMakeFiles/install.dir
-/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/lib/stella_vslam/3rd/FBoW/build/CMakeFiles/install/local.dir
-/home/ardyseto/Documents/GitHub/Stella-VSLAM-ROS-with-Pixi/lib/stella_vslam/3rd/FBoW/build/CMakeFiles/install/strip.dir

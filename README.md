@@ -325,25 +325,30 @@ ROS 2 Parameters:
 ## 📁 Project Structure
 
 ```
-stella-vslam-ros/
-├── bin/                        # Quick access executables
-│   ├── run_camera_airsim_slam
-│   └── run_camera_airsim_log_slam
-├── dataset/                    # Example datasets
+stella-vslam-ros-with-pixi/
+├── assets/
+│   └── image-stella-vslam.png
+├── dataset/
 │   ├── orb_vocab.fbow
 │   ├── aist_living_lab_1/
 │   └── indoor_forward_3_snapdragon_with_gt/
 │       └── indoor_forward_calib_snapdragon/
-├── lib/                        # Submodule sources
-│   ├── stella_vslam/
-│   ├── pangolin_viewer/
+├── lib/
 │   ├── AirSim/
+│   ├── iridescence/
+│   ├── iridescence_viewer/
+│   ├── Pangolin/
+│   ├── pangolin_viewer/
+│   ├── socket.io-client-cpp/
+│   ├── socket_publisher/
+│   ├── socket_viewer/
+│   ├── stella_vslam/
 │   └── stella_vslam_examples/
 │       └── build/
 │           ├── run_camera_airsim_slam
 │           ├── run_camera_slam
 │           └── ... (other examples)
-├── ros2_ws/                    # ROS 2 workspace
+├── ros2_ws/
 │   └── src/stella_vslam_ros/
 ├── scripts/
 │   ├── build-deps.sh           # Build viewer dependencies + AirSim deps
@@ -353,12 +358,14 @@ stella-vslam-ros/
 │   ├── check-deps.sh           # Verify build dependencies
 │   ├── check.sh                # Verify core build + examples
 │   ├── check-ros.sh            # Verify ROS 2 build
-│   ├── dataset.sh
-│   ├── test-aist.sh
-│   ├── test-uzh.sh
-│   └── clean.sh
+│   ├── dataset.sh              # Download dataset
+│   ├── test-aist.sh            # Run AIST Living Lab example 
+│   ├── test-uzh.sh             # Run UZH-FPV example
+│   └── clean.sh                # Clean build artifacts
 └── pixi.toml                   # Pixi configuration
 ```
+
+Note: for this project, all non-build files in vendored libraries have been pruned/deleted.
 
 ---
 
@@ -383,7 +390,19 @@ pixi run build-ros
 
 ## 📚 References
 
-- [Stella VSLAM](https://github.com/stella-cv/stella_vslam)
+Vendored libraries under `lib/`:
+- [AirSim](https://github.com/microsoft/AirSim) (`lib/AirSim`)
+- [iridescence](https://github.com/koide3/iridescence) (`lib/iridescence`)
+- [iridescence_viewer](https://github.com/stella-cv/iridescence_viewer) (`lib/iridescence_viewer`)
+- [Pangolin](https://github.com/stevenlovegrove/Pangolin) (`lib/Pangolin`)
+- [pangolin_viewer](https://github.com/stella-cv/pangolin_viewer) (`lib/pangolin_viewer`)
+- [socket.io-client-cpp](https://github.com/socketio/socket.io-client-cpp) (`lib/socket.io-client-cpp`)
+- [socket_publisher](https://github.com/stella-cv/socket_publisher) (`lib/socket_publisher`)
+- [socket_viewer](https://github.com/stella-cv/socket_viewer) (`lib/socket_viewer`)
+- [Stella VSLAM](https://github.com/stella-cv/stella_vslam) (`lib/stella_vslam`)
+- [stella_vslam_examples](https://github.com/stella-cv/stella_vslam_examples) (`lib/stella_vslam_examples`)
+
+Other references:
 - [Stella VSLAM ROS](https://github.com/stella-cv/stella_vslam_ros)
 - [Pixi Package Manager](https://pixi.sh/)
 

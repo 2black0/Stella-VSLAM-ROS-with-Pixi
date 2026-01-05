@@ -78,6 +78,28 @@ require_repo() {
     fi
 }
 
+prepare_build_dir() {
+    local src_dir="$1"
+    local build_dir="$2"
+    local cache_file="$build_dir/CMakeCache.txt"
+    local src_dir_abs="$src_dir"
+
+    if [ -d "$src_dir" ]; then
+        src_dir_abs="$(cd "$src_dir" && pwd -P)"
+    fi
+
+    if [ -f "$cache_file" ]; then
+        local cached_src
+        cached_src=$(grep -m 1 "^CMAKE_HOME_DIRECTORY:INTERNAL=" "$cache_file" | cut -d= -f2-)
+        if [ -n "$cached_src" ] && [ "$cached_src" != "$src_dir_abs" ]; then
+            echo "INFO: Removing stale build dir $build_dir (was configured for $cached_src)"
+            rm -rf "$build_dir"
+        fi
+    fi
+
+    mkdir -p "$build_dir"
+}
+
 cmake_bool() {
     if [ "$1" -eq 1 ]; then
         echo "ON"
@@ -98,7 +120,8 @@ fi
 
 echo "Building FBoW (shared)..."
 cd "$LIB_DIR/stella_vslam/3rd/FBoW"
-mkdir -p build && cd build
+prepare_build_dir "$LIB_DIR/stella_vslam/3rd/FBoW" "$LIB_DIR/stella_vslam/3rd/FBoW/build"
+cd "$LIB_DIR/stella_vslam/3rd/FBoW/build"
 cmake \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX" \
@@ -111,7 +134,8 @@ make install
 
 echo "Building stella_vslam core..."
 cd "$LIB_DIR/stella_vslam"
-mkdir -p build && cd build
+prepare_build_dir "$LIB_DIR/stella_vslam" "$LIB_DIR/stella_vslam/build"
+cd "$LIB_DIR/stella_vslam/build"
 cmake \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX" \
@@ -139,7 +163,8 @@ if [ "$BUILD_IRIDESCENCE" -eq 1 ]; then
     fi
 
     cd "$LIB_DIR/iridescence_viewer"
-    mkdir -p build && cd build
+    prepare_build_dir "$LIB_DIR/iridescence_viewer" "$LIB_DIR/iridescence_viewer/build"
+    cd "$LIB_DIR/iridescence_viewer/build"
     cmake \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX" \
@@ -161,7 +186,8 @@ if [ "$BUILD_PANGOLIN" -eq 1 ]; then
 
     echo "Building plugin: pangolin_viewer"
     cd "$LIB_DIR/pangolin_viewer"
-    mkdir -p build && cd build
+    prepare_build_dir "$LIB_DIR/pangolin_viewer" "$LIB_DIR/pangolin_viewer/build"
+    cd "$LIB_DIR/pangolin_viewer/build"
     cmake \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX" \
@@ -183,7 +209,8 @@ if [ "$BUILD_SOCKET" -eq 1 ]; then
     fi
 
     cd "$LIB_DIR/socket_publisher"
-    mkdir -p build && cd build
+    prepare_build_dir "$LIB_DIR/socket_publisher" "$LIB_DIR/socket_publisher/build"
+    cd "$LIB_DIR/socket_publisher/build"
     cmake \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX" \
@@ -218,7 +245,8 @@ fi
 
 # Build examples
 cd "$EXAMPLES_DIR"
-mkdir -p build && cd build
+prepare_build_dir "$EXAMPLES_DIR" "$EXAMPLES_DIR/build"
+cd "$EXAMPLES_DIR/build"
 cmake \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX" \

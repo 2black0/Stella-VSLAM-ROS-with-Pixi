@@ -345,7 +345,7 @@ std::string data_serializer::serialize_as_protobuf(const std::vector<std::shared
     for (const auto keyfrm_obj : allocated_keyframes) {
         keyfrm_obj->clear_pose();
     }
-    (void)(void)(void)(void)(void)(void)(void)(void)(void)(void)(void)(void)(void)map.release_current_frame();
+    (void)(void)(void)(void)(void)(void)(void)(void)(void)(void)(void)(void)(void)(void)map.release_current_frame();
 
     const auto* cstr = reinterpret_cast<const unsigned char*>(buffer.c_str());
     return base64_encode(cstr, buffer.length());

@@ -13,6 +13,28 @@ if [ -z "$CONDA_PREFIX" ]; then
     exit 1
 fi
 
+prepare_build_dir() {
+    local src_dir="$1"
+    local build_dir="$2"
+    local cache_file="$build_dir/CMakeCache.txt"
+    local src_dir_abs="$src_dir"
+
+    if [ -d "$src_dir" ]; then
+        src_dir_abs="$(cd "$src_dir" && pwd -P)"
+    fi
+
+    if [ -f "$cache_file" ]; then
+        local cached_src
+        cached_src=$(grep -m 1 "^CMAKE_HOME_DIRECTORY:INTERNAL=" "$cache_file" | cut -d= -f2-)
+        if [ -n "$cached_src" ] && [ "$cached_src" != "$src_dir_abs" ]; then
+            echo "INFO: Removing stale build dir $build_dir (was configured for $cached_src)"
+            rm -rf "$build_dir"
+        fi
+    fi
+
+    mkdir -p "$build_dir"
+}
+
 VOCAB="$DATASET_DIR/orb_vocab.fbow"
 CONFIG="$PROJECT_ROOT/lib/stella_vslam/example/uzh_fpv/UZH_FPV_mono.yaml"
 SRC_DATASET="$DATASET_DIR/indoor_forward_3_snapdragon_with_gt"
@@ -115,7 +137,7 @@ fi
 # 3. Build example if needed
 if [ ! -x "$BUILD_DIR/run_image_slam" ]; then
     echo "🔨 Building run_image_slam..."
-    mkdir -p "$BUILD_DIR"
+    prepare_build_dir "$EXAMPLES_DIR" "$BUILD_DIR"
     cd "$BUILD_DIR"
     cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
     make -j"$(nproc)"
