@@ -5,6 +5,15 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 PROJECT_ROOT="$SCRIPT_DIR/.."
 LIB_DIR="$PROJECT_ROOT/lib"
 
+TOTAL_CORES=$(nproc)
+BUILD_JOBS=$(( TOTAL_CORES * 75 / 100 ))
+
+if [ "$BUILD_JOBS" -lt 1 ]; then
+    BUILD_JOBS=1
+fi
+
+echo "INFO: Building with $BUILD_JOBS jobs ($TOTAL_CORES available, using ~75%)"
+
 usage() {
     cat <<EOF
 Usage: $(basename "$0") [--all] [--iridescence|--irisdecence] [--pangolin] [--socket]
@@ -129,7 +138,7 @@ cmake \
     -DCMAKE_POLICY_DEFAULT_CMP0074=NEW \
     -DBUILD_SHARED_LIBS=ON \
     ..
-make -j"$(nproc)"
+make -j"$BUILD_JOBS"
 make install
 
 echo "Building stella_vslam core..."
@@ -146,7 +155,7 @@ cmake \
     -DUSE_IRIDESCENCE_VIEWER="$(cmake_bool "$BUILD_IRIDESCENCE")" \
     -DUSE_SOCKET_PUBLISHER="$(cmake_bool "$BUILD_SOCKET")" \
     ..
-make -j"$(nproc)"
+make -j"$BUILD_JOBS"
 make install
 
 if [ "$BUILD_IRIDESCENCE" -eq 1 ]; then
@@ -177,7 +186,7 @@ if [ "$BUILD_IRIDESCENCE" -eq 1 ]; then
         -DIridescence_LIBRARY="$CONDA_PREFIX/lib/libiridescence.so" \
         -Dgl_imgui_LIBRARY="$CONDA_PREFIX/lib/libgl_imgui.so" \
         ..
-    make -j"$(nproc)"
+    make -j"$BUILD_JOBS"
     make install
 fi
 
@@ -195,7 +204,7 @@ if [ "$BUILD_PANGOLIN" -eq 1 ]; then
         -DOpenGL_GL_PREFERENCE=GLVND \
         -DCMAKE_POLICY_DEFAULT_CMP0072=NEW \
         ..
-    make -j"$(nproc)"
+    make -j"$BUILD_JOBS"
     make install
 fi
 
@@ -218,7 +227,7 @@ if [ "$BUILD_SOCKET" -eq 1 ]; then
         -DOpenGL_GL_PREFERENCE=GLVND \
         -DCMAKE_POLICY_DEFAULT_CMP0072=NEW \
         ..
-    make -j"$(nproc)"
+    make -j"$BUILD_JOBS"
     make install
 fi
 
@@ -260,6 +269,6 @@ cmake \
     -DAIRSIM_ROOT="$LIB_DIR/AirSim" \
     ..
 
-make -j"$(nproc)"
+make -j"$BUILD_JOBS"
 
 echo "Build complete."
