@@ -38,7 +38,7 @@ if [ ! -d "aist_living_lab_1" ]; then
         # Use gdown for reliable Google Drive download
         FILEID="1d8kADKWBptEqTF7jEVhKatBEdN7g0ikY"
         FILENAME="aist_living_lab_1.zip"
-        
+
         if command -v gdown &> /dev/null; then
             gdown "${FILEID}" -O "${FILENAME}"
         else
@@ -49,7 +49,7 @@ if [ ! -d "aist_living_lab_1" ]; then
     else
         echo "ℹ️  aist_living_lab_1.zip already exists."
     fi
-    
+
     echo "   Extracting..."
     unzip -q -o aist_living_lab_1.zip
     rm -f aist_living_lab_1.zip
@@ -71,7 +71,7 @@ UZH_URL="http://rpg.ifi.uzh.ch/datasets/uzh-fpv-newer-versions/v3/${UZH_ZIP}"
 if [ ! -d "$UZH_DIR" ]; then
     if [ ! -f "$UZH_ZIP" ]; then
         echo "   Downloading zip file..."
-        curl -L "$UZH_URL" -o "$UZH_ZIP"
+        curl -L -C - "$UZH_URL" -o "$UZH_ZIP"
         echo "✅ $UZH_ZIP downloaded."
     else
         echo "ℹ️  $UZH_ZIP already exists."
