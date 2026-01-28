@@ -22,6 +22,8 @@ check-dataset = "bash scripts/check-dataset.sh"
 test-aist = "bash scripts/test-aist.sh"
 test-uzh = "bash scripts/test-uzh.sh"
 clean = "bash scripts/clean.sh"
+clean-libs = "bash scripts/clean_env.sh"
+link-opencv = { cmd = "bash scripts/link_opencv.sh", depends-on = ["clean-libs"] }
 
 # Dependencies used by all environments
 [dependencies]

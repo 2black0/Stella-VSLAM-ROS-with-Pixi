@@ -359,7 +359,7 @@ stella-vslam-ros-with-pixi/
 │   ├── check.sh                # Verify core build + examples
 │   ├── check-ros.sh            # Verify ROS 2 build
 │   ├── dataset.sh              # Download dataset
-│   ├── test-aist.sh            # Run AIST Living Lab example 
+│   ├── test-aist.sh            # Run AIST Living Lab example
 │   ├── test-uzh.sh             # Run UZH-FPV example
 │   └── clean.sh                # Clean build artifacts
 └── pixi.toml                   # Pixi configuration
@@ -391,6 +391,7 @@ pixi run build-ros
 ## 📚 References
 
 Vendored libraries under `lib/`:
+
 - [AirSim](https://github.com/microsoft/AirSim) (`lib/AirSim`)
 - [iridescence](https://github.com/koide3/iridescence) (`lib/iridescence`)
 - [iridescence_viewer](https://github.com/stella-cv/iridescence_viewer) (`lib/iridescence_viewer`)
@@ -403,6 +404,7 @@ Vendored libraries under `lib/`:
 - [stella_vslam_examples](https://github.com/stella-cv/stella_vslam_examples) (`lib/stella_vslam_examples`)
 
 Other references:
+
 - [Stella VSLAM ROS](https://github.com/stella-cv/stella_vslam_ros)
 - [Pixi Package Manager](https://pixi.sh/)
 
