@@ -35,6 +35,7 @@ colcon build \
     --symlink-install \
     --cmake-args \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-    -DCMAKE_PREFIX_PATH="$CONDA_PREFIX"
+    -DCMAKE_PREFIX_PATH="$CONDA_PREFIX" \
+    --parallel-workers 8
 
 echo "Done. Source: source $ROS2_WS/install/setup.bash"

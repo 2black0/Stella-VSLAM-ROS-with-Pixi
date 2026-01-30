@@ -5,14 +5,8 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 PROJECT_ROOT="$SCRIPT_DIR/.."
 LIB_DIR="$PROJECT_ROOT/lib"
 
-TOTAL_CORES=$(nproc)
-BUILD_JOBS=$(( TOTAL_CORES * 75 / 100 ))
-
-if [ "$BUILD_JOBS" -lt 1 ]; then
-    BUILD_JOBS=1
-fi
-
-echo "INFO: Building with $BUILD_JOBS jobs ($TOTAL_CORES available, using ~75%)"
+BUILD_JOBS=8
+echo "INFO: Building with $BUILD_JOBS jobs"
 
 usage() {
     cat <<EOF
