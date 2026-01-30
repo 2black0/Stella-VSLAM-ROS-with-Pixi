@@ -27,6 +27,7 @@
 
 ```bash
 pixi install
+pixi run link-opencv
 ```
 
 then activate the Pixi shell:
@@ -59,6 +60,14 @@ pixi run build-deps -- --socket
 
 ```bash
 pixi run build -- --all
+```
+
+To build only one viewer dependency:
+
+```bash
+pixi run build -- --iridescence
+pixi run build -- --pangolin
+pixi run build -- --socket
 ```
 
 ### 5️⃣ Build ROS 2 Wrapper (Optional)
