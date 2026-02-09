@@ -105,6 +105,25 @@ prepare_build_dir() {
 
 mkdir -p "$LIB_DIR"
 
+# Ensure OpenGL symlinks exist BEFORE building anything
+# This is critical for CMake to find libOpenGL.so (unversioned)
+echo "Ensuring OpenGL/EGL symlinks in Pixi environment..."
+ensure_gl_symlink() {
+    local link_path="$1"
+    local target_path="$2"
+    if [ ! -e "$link_path" ] && [ -e "$target_path" ]; then
+        ln -s "$(basename "$target_path")" "$link_path"
+        echo "  Created: $(basename "$link_path") -> $(basename "$target_path")"
+    elif [ -e "$link_path" ]; then
+        echo "  OK: $(basename "$link_path") already exists"
+    else
+        echo "  WARNING: Target $(basename "$target_path") not found (symlink will be created during Pangolin build)"
+    fi
+}
+
+ensure_gl_symlink "$CONDA_PREFIX/lib/libOpenGL.so" "$CONDA_PREFIX/lib/libOpenGL.so.0"
+ensure_gl_symlink "$CONDA_PREFIX/lib/libEGL.so" "$CONDA_PREFIX/lib/libEGL.so.1"
+
 # Viewer dependencies
 if [ "$BUILD_IRIDESCENCE" -eq 1 ]; then
     require_repo "$LIB_DIR/iridescence" "iridescence"
@@ -156,17 +175,6 @@ if [ "$BUILD_PANGOLIN" -eq 1 ]; then
     if [ -f "$PANGOLIN_PACKET_TAGS" ] && ! grep -q "#include <cstdint>" "$PANGOLIN_PACKET_TAGS"; then
         sed -i '/#pragma once/a #include <cstdint>' "$PANGOLIN_PACKET_TAGS"
     fi
-
-    ensure_gl_symlink() {
-        local link_path="$1"
-        local target_path="$2"
-        if [ ! -e "$link_path" ] && [ -e "$target_path" ]; then
-            ln -s "$(basename "$target_path")" "$link_path"
-        fi
-    }
-
-    ensure_gl_symlink "$CONDA_PREFIX/lib/libOpenGL.so" "$CONDA_PREFIX/lib/libOpenGL.so.0"
-    ensure_gl_symlink "$CONDA_PREFIX/lib/libEGL.so" "$CONDA_PREFIX/lib/libEGL.so.1"
 
     cd "$PANGOLIN_DIR"
     prepare_build_dir "$PANGOLIN_DIR" "$PANGOLIN_DIR/build"
