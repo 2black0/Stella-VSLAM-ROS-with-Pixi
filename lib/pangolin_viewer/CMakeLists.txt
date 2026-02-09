@@ -5,6 +5,9 @@ project(pangolin_viewer LANGUAGES CXX C)
 
 find_package(stella_vslam REQUIRED)
 
+# OpenGL (required before Pangolin when using GLVND)
+find_package(OpenGL REQUIRED COMPONENTS OpenGL)
+
 # Pangolin
 find_package(Pangolin REQUIRED)
 

@@ -194,7 +194,9 @@ if [ "$BUILD_PANGOLIN" -eq 1 ]; then
     cmake \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX" \
-        -DCMAKE_PREFIX_PATH="$CONDA_PREFIX" \
+        -DCMAKE_PREFIX_PATH="$CONDA_PREFIX;$LIB_DIR/Pangolin/build" \
+        -DCMAKE_IGNORE_PREFIX_PATH=/usr/local \
+        -DPangolin_DIR="$LIB_DIR/Pangolin/build" \
         -DOpenGL_GL_PREFERENCE=GLVND \
         -DCMAKE_POLICY_DEFAULT_CMP0072=NEW \
         ..
@@ -253,8 +255,9 @@ cd "$EXAMPLES_DIR/build"
 cmake \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX" \
-    -DCMAKE_PREFIX_PATH="$CONDA_PREFIX" \
+    -DCMAKE_PREFIX_PATH="$CONDA_PREFIX;$LIB_DIR/Pangolin/build" \
     -DCMAKE_IGNORE_PREFIX_PATH=/usr/local \
+    -DPangolin_DIR="$LIB_DIR/Pangolin/build" \
     -DCMAKE_CXX_FLAGS="-Wno-class-memaccess -Wno-unused-variable -Wno-unused-parameter -Wno-deprecated-copy -Wno-deprecated-declarations -Wno-stringop-truncation" \
     -DCMAKE_POLICY_DEFAULT_CMP0074=NEW \
     -DOpenGL_GL_PREFERENCE=GLVND \
