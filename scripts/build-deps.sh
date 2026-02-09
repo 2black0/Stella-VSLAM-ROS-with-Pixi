@@ -182,8 +182,8 @@ if [ "$BUILD_PANGOLIN" -eq 1 ]; then
     cmake \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX="$CONDA_PREFIX" \
-        -DCMAKE_PREFIX_PATH="$CONDA_PREFIX" \
-        -DCMAKE_SYSTEM_PREFIX_PATH="$CONDA_PREFIX" \
+        -DCMAKE_PREFIX_PATH="$CONDA_PREFIX:/usr" \
+        -DCMAKE_SYSTEM_PREFIX_PATH="$CONDA_PREFIX:/usr" \
         -DCMAKE_IGNORE_PREFIX_PATH=/usr/local \
         -DCMAKE_SKIP_BUILD_RPATH=TRUE \
         -DCMAKE_SKIP_INSTALL_RPATH=TRUE \
@@ -195,6 +195,7 @@ if [ "$BUILD_PANGOLIN" -eq 1 ]; then
         -DEGL_LIBRARY="$CONDA_PREFIX/lib/libEGL.so" \
         -DCMAKE_CXX_FLAGS="-Wno-stringop-truncation -Wno-deprecated-copy -Wno-parentheses -Wno-unused-parameter -Wno-maybe-uninitialized" \
         -DBUILD_EXAMPLES=OFF \
+        -DBUILD_TOOLS=OFF \
         -DBUILD_PANGOLIN_DEPTHSENSE=OFF \
         -DBUILD_PANGOLIN_FFMPEG=OFF \
         -DBUILD_PANGOLIN_LIBDC1394=OFF \

@@ -92,6 +92,11 @@ xorg-libxcursor = "*"
 xorg-libxi = "*"
 xorg-libxext = "*"
 xorg-libxfixes = "*"
+xorg-libxcb = "*"
+xcb-util = "*"
+xcb-util-keysyms = "*"
+xorg-libxau = "*"
+xorg-libxdmcp = "*"
 
 # Build Tools
 compilers = "*"
