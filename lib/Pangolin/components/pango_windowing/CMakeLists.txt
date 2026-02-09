@@ -25,15 +25,21 @@ elseif(EMSCRIPTEN)
 else()
     find_package(X11 QUIET)
     find_package(OpenGL QUIET COMPONENTS EGL)
+    
+    # Set default to X11 first, then check for Wayland as secondary option
+    set(PANGO_DEFAULT_BACKEND "x11")
+    
     if(X11_FOUND AND OpenGL_EGL_FOUND)
         target_sources( ${COMPONENT} PRIVATE ${CMAKE_CURRENT_LIST_DIR}/src/display_x11.cpp )
         target_link_libraries(${COMPONENT} PRIVATE ${X11_LIBRARIES} )
         target_include_directories(${COMPONENT} PRIVATE ${X11_INCLUDE_DIR} )
         target_link_libraries(${COMPONENT} PRIVATE OpenGL::EGL)
         PangolinRegisterFactory(WindowInterface X11Window)
+        # X11 is available, set it as the default backend
+        set(PANGO_DEFAULT_BACKEND "x11")
     endif()
 
-    # Wayland
+    # Wayland (optional, if X11 fails at runtime user can use wayland:// URI)
     find_package(PkgConfig)
     pkg_check_modules(WAYLAND_CLIENT wayland-client QUIET)
     pkg_check_modules(wayland-protocols QUIET wayland-protocols>=1.13)
@@ -69,12 +75,12 @@ else()
         target_include_directories(${COMPONENT} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
         target_sources( ${COMPONENT} PRIVATE xdg-shell-protocol.c)
 
-        # register window factory
-        target_compile_definitions(${COMPONENT} PUBLIC "PANGO_DEFAULT_WIN_URI=\"wayland\"")
+        # register window factory (but keep X11 as default)
         PangolinRegisterFactory(WindowInterface WaylandWindow)
-    else()
-        target_compile_definitions(${COMPONENT} PUBLIC "PANGO_DEFAULT_WIN_URI=\"x11\"")
     endif()
+    
+    # Apply the default backend compile definition
+    target_compile_definitions(${COMPONENT} PUBLIC "PANGO_DEFAULT_WIN_URI=\"${PANGO_DEFAULT_BACKEND}\"")
 endif()
 
 # headless offscreen rendering via EGL
